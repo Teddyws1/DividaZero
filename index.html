@@ -1,391 +1,681 @@
 <!DOCTYPE html>
-<html lang="pt-PT" class="theme-light">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DívidaZero - Gestão Inteligente de Dívidas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DívidaZero - Atualização em Andamento</title>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* 1.1 VARIÁVEIS DE TEMA E RESET [-003Tr] */
+    :root {
+      --primary-color: #00a86b;
+      --primary-dark: #007a4d;
+      --header-bg: #0f172a;
+      --accent-orange: #00a86b;
+      --color-titulo:#ea580c;
+      --accent-orange-hover: #ea580c;
+      --bg-main: #f1f5f9;
+      --bg-card: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-color: rgba(15, 23, 42, 0.08);
+      --danger-color: #ef4444;
+      --share-color: #2563eb;
+      --success-color: #10b981;
+      --sidebar-width: 290px;
+      --fubdo-do-theme:#F5F5F5;
+    }
 
-<link rel="icon" type="image/png" href="https://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg">
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="roots.css">
-<!---sistema de web app--->
-<link rel="manifest" href="manifest.json">
+    html, body {
+      /* Evita que o gesto de arrastar para baixo no celular (pull-to-refresh) recarregue a página */
+      overscroll-behavior-y: none;
+    }
 
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      position: relative;
+    }
 
-<link rel="icon" type="image/png" href="https://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg">
-<link rel="apple-touch-icon" href="https://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg">
+    /* Brilho de Fundo Ambiental - Adaptável */
+    .bg-glow {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(100vw, 650px);
+      height: min(100vw, 650px);
+      background: radial-gradient(circle, rgba(0, 168, 107, 0.15) 0%, rgba(234, 88, 12, 0.08) 40%, rgba(0, 0, 0, 0) 70%);
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 50%;
+    }
 
+    .container {
+      width: 100%;
+      max-width: 660px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px var(--shadow-color);
+      z-index: 1;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Logo e Cabeçalho */
+    .logo-wrapper {
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .system-logo {
+      width: clamp(90px, 15vw, 130px);
+      height: clamp(90px, 15vw, 130px);
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px var(--shadow-color));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .system-title {
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      font-weight: 800;
+      color: var(--color-titulo);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* Badge de Status da Atualização */
+    .status-badge-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0, 168, 107, 0.1);
+      color: var(--primary-color);
+      border: 1px solid rgba(0, 168, 107, 0.25);
+      padding: 0.5rem 1.2rem;
+      border-radius: 9999px;
+      font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 168, 107, 0.08);
+    }
+
+    /* Animação dos 3 Pontinhos no Status */
+    .dots-animated::after {
+      content: '.';
+      display: inline-block;
+      animation: dotsAnimation 1.8s steps(4, jump-none) infinite;
+      width: 1.2em;
+      text-align: left;
+    }
+
+    @keyframes dotsAnimation {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+      100% { content: ''; }
+    }
+
+    .status-pulse {
+      width: 10px;
+      height: 10px;
+      background-color: var(--primary-color);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(0, 168, 107, 0.7);
+      animation: pulse 1.8s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 168, 107, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(0, 168, 107, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 168, 107, 0);
+      }
+    }
+
+    .description {
+      color: var(--text-muted);
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Card Informativo do Escopo */
+    .info-notice {
+      background: rgba(0, 168, 107, 0.05);
+      border: 1px dashed rgba(0, 168, 107, 0.3);
+      border-radius: 12px;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: left;
+      margin-bottom: 1.75rem;
+    }
+
+    .info-notice i {
+      color: var(--primary-color);
+      flex-shrink: 0;
+    }
+
+    /* Seção de Progresso sem Barra de Carregamento */
+    .progress-box {
+      background: var(--fubdo-do-theme);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    .return-time-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .return-time-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Span com formato de horário HH:MM */
+    .return-time-span {
+      font-size: clamp(2rem, 6vw, 2.75rem);
+      font-weight: 800;
+      color: var(--color-titulo);
+      letter-spacing: 1px;
+      line-height: 1.1;
+      display: inline-block;
+      background: linear-gradient(135deg, var(--color-titulo), var(--primary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .current-step-text {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .estimated-time {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      font-size: clamp(0.75rem, 2.2vw, 0.825rem);
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .timer-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--bg-card);
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Lista Visual de Etapas */
+    .steps-timeline {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+      text-align: left;
+    }
+
+    .timeline-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .timeline-step.completed {
+      border-color: rgba(0, 168, 107, 0.4);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .timeline-step.active {
+      border-color: rgba(234, 88, 12, 0.5);
+      color: var(--color-titulo);
+      font-weight: 700;
+      background: rgba(234, 88, 12, 0.05);
+    }
+
+    .timeline-step i {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Ações / Botões */
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all 0.2s ease;
+      min-height: 44px; /* Acessibilidade Mobile */
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 168, 107, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--fubdo-do-theme);
+      border-color: var(--text-muted);
+    }
+
+    /* Notificação Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background-color: var(--header-bg);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border-radius: 99px;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 100;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Rodapé */
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Animação de Rotação Ininterrupta */
+    @keyframes spinContinuous {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .rotate-icon,
+    .rotate-icon svg,
+    i[data-lucide="refresh-cw"].rotate-icon {
+      animation: spinContinuous 1.8s linear infinite !important;
+      transform-origin: center center;
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* Ajustes para Dispositivos Móveis e Tablets */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.75rem 1.25rem;
+      }
+      .estimated-time {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .steps-timeline {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem 0.75rem;
+      }
+      .container {
+        padding: 1.5rem 1rem;
+        border-radius: 16px;
+      }
+      .steps-timeline {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ==========================================================================
-       PARTE 2 DE 3: ESTRUTURA HTML DA INTERFACE [-005Ac]
-       ========================================================================== -->
-    <div id="app-container">
+  <div class="bg-glow"></div>
 
-        <!-- [-006Hd] CABEÇALHO -->
-        <header class="app-header">
-            <div class="header-title-container">
-                <button class="icon-btn" id="btn-open-sidebar" title="Menu Lateral">
-                    <ion-icon name="menu-outline"></ion-icon>
-                </button>
-                <h1 class="header-title">Minhas Despesas</h1>
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn" id="btn-open-add-modal" title="Adicionar Despesa">
-                    <ion-icon name="add-outline"></ion-icon>
-                </button>
-                <button class="icon-btn" id="btn-sort-menu" title="Ordenar Dívidas">
-                    <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                </button>
-
-                <!-- [-008Sd] DROPDOWN DE ORDENAÇÃO -->
-                <div class="sort-dropdown" id="sort-dropdown">
-                    <button class="sort-option selected" data-sort="recent">
-                        <ion-icon name="time-outline"></ion-icon> Mais Recentes
-                    </button>
-                    <button class="sort-option" data-sort="oldest">
-                        <ion-icon name="hourglass-outline"></ion-icon> Mais Antigos
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- [-009Mn] NAVEGADOR DE MESES -->
-        <nav class="month-navigator">
-            <button class="icon-btn" id="btn-prev-month">
-                <ion-icon name="chevron-back-outline"></ion-icon>
-            </button>
-            <div class="month-display" id="current-month-display">agosto / 2026</div>
-            <button class="icon-btn" id="btn-next-month">
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-            </button>
-        </nav>
-
-        <!-- [-010Sb] BARRA DE PESQUISA -->
-        <div class="search-bar-container">
-            <div class="search-input-wrapper">
-                <ion-icon name="search-outline"></ion-icon>
-                <input type="text" id="search-input" class="search-input" placeholder="Buscar por nome, id, empresa (Vivo, Claro)...">
-            </div>
-        </div>
-
-        <!-- [-011Mc] CONTAINER DE DÍVIDAS -->
-        <main class="main-content" id="debts-container">
-            <!-- Cards gerados via JS -->
-        </main>
-
-        <!-- [-012Ft] RODAPÉ COM RESUMO E TOTAIS -->
-        <footer class="app-footer">
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span class="stat-label">Total Dívidas</span>
-                    <span class="stat-val total-color" id="stat-count-total">0</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Pagas</span>
-                    <span class="stat-val paid-color" id="stat-count-paid">0</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Para Pagar</span>
-                    <span class="stat-val pending-color" id="stat-count-pending">0</span>
-                </div>
-            </div>
-
-            <divclass="footer-summary">
-                <div class="footer-row">
-                    <span>Já Pago:</span>
-                    <span id="footer-paid-value" style="color: #4ade80; font-weight: 700;">R$ 0,00</span>
-                </div>
-                <div class="footer-row">
-                    <span>Falta Pagar:</span>
-                    <span id="footer-balance" style="color: #fbbf24; font-weight: 700;">R$ 0,00</span>
-                </div>
-                <div class="footer-row total-bold">
-                    <span>Total de Dívidas:</span>
-                    <span id="footer-total">R$ 0,00</span>
-                </div>
-            </div>
-        </footer>
-
+  <main class="container">
+    <!-- Logo e Título -->
+    <div class="logo-wrapper">
+      <img 
+        src="https://i.postimg.cc/9Q9RYSD4/Picsart-26-08-16-12-23-31-285.png" 
+        alt="DívidaZero Logo" 
+        class="system-logo"
+        onerror="this.onerror=null; this.src='https://via.placeholder.com/130?text=D%C3%ADvidaZero';"
+      >
     </div>
 
-    <!-- [-013Sb] ABA LATERAL (SIDEBAR) -->
-    <div class="sidebar-overlay" id="sidebar-overlay"></div>
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <ion-icon name="wallet-outline"></ion-icon>
-            <h2>DívidaZero</h2>
-        </div>
-        <div class="sidebar-menu">
-            <div class="menu-item" id="menu-item-history">
-                <ion-icon name="time-outline"></ion-icon>
-                <span>Histórico de Atividades</span>
-            </div>
-            <div class="menu-item" id="menu-item-updates">
-                <ion-icon name="gift-outline"></ion-icon>
-                <span>Novidades & Atualizações</span>
-            </div>
-            <div class="menu-item" id="menu-item-theme">
-                <ion-icon name="moon-outline" id="theme-icon"></ion-icon>
-                <span id="theme-text">Modo Escuro</span>
-            </div>
-            <div class="menu-item" id="menu-item-export">
-                <ion-icon name="download-outline"></ion-icon>
-                <span>Exportar Dados (JSON)</span>
-            </div>
-            <div class="menu-item" id="menu-item-import">
-                <ion-icon name="cloud-upload-outline"></ion-icon>
-                <span>Importar Dados (JSON)</span>
-                <input type="file" id="import-file-input" accept=".json" style="display: none;">
-            </div>
-            <!-- [-019Dv] Botão Desenvolvedor -->
-            <div class="menu-item" id="menu-item-developer">
-                <ion-icon name="code-slash-outline"></ion-icon>
-                <span>Sobre o Desenvolvedor</span>
-            </div>
-        </div>
-        <div class="sidebar-footer">
-            desenvolvido por Teddy machado 2026™
-        </div>
-    </aside>
-
-    <!-- [-014Md] MODAL DE CADASTRO -->
-    <div class="modal-overlay" id="modal-add-expense">
-        <div class="modal-card">
-            <div class="modal-header">
-                <button class="icon-btn" id="btn-close-modal-expense">
-                    <ion-icon name="arrow-back-outline"></ion-icon>
-                </button>
-                <h3>Nova Despesa</h3>
-                <div style="width: 24px;"></div>
-            </div>
-            <div class="modal-body">
-                <form id="form-expense">
-                    <div class="form-group">
-                        <label>Empresa / Categoria</label>
-                        <select id="expense-company" class="form-control" required>
-                            <option value="Outros">Outros / Geral</option>
-                            <option value="Vivo">Vivo</option>
-                            <option value="Claro">Claro</option>
-                            <option value="TIM">TIM</option>
-                            <option value="Nubank">Nubank</option>
-                            <option value="Itaú">Itaú</option>
-                            <option value="Bradesco">Bradesco</option>
-                            <option value="Santander">Santander</option>
-                            <option value="Caixa">Caixa</option>
-                            <option value="Energia (Enel/Equatorial)">Energia (Enel/Equatorial)</option>
-                            <option value="Água / Saneamento">Água / Saneamento</option>
-                            <option value="Internet / Fibra">Internet / Fibra</option>
-                            <option value="Supermercado">Supermercado</option>
-                            <option value="Aluguel / Condomínio">Aluguel / Condomínio</option>
-                            <option value="custom">+ Digitar outra empresa...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="custom-company-group" style="display: none;">
-                        <label>Nome da Empresa Customizada</label>
-                        <input type="text" id="expense-custom-company" class="form-control" placeholder="Digite o nome da empresa..." autocomplete="off">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Descrição da Dívida / Observações</label>
-                        <textarea id="expense-description" class="form-control" placeholder="Informe a descrição completa (suporta mais de 500 caracteres)..." required autocomplete="off"></textarea>
-                        <div class="char-counter" id="char-counter">0 caracteres</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Valor (R$)</label>
-                        <input type="number" step="0.01" id="expense-value" class="form-control" placeholder="Informe o valor" required autocomplete="off">
-                    </div>
-                    
-                    <div class="form-group" style="text-align: center;">
-                        <label style="font-size: 0.85rem; color: var(--text-muted);">Data de vencimento</label>
-                        <input type="date" id="expense-date" class="form-control" style="text-align: center; border-bottom: 2px solid var(--border-color);" required>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="radio-group" style="justify-content: center;">
-                            <label class="radio-option">
-                                <input type="radio" name="repeat" value="no" checked>
-                                <span>Não repetir</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="repeat" value="yes">
-                                <span>Repetir</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary" style="margin-top: 15px;">Salvar Dívida</button>
-                </form>
-            </div>
-        </div>
+    <h1 class="system-title">DívidaZero</h1>
+    
+    <div class="status-badge-wrapper">
+      <div class="status-badge">
+        <span class="status-pulse"></span>
+        <i data-lucide="refresh-cw" class="rotate-icon" style="width: 16px; height: 16px;"></i>
+        <span>Atualização em Andamento<span class="dots-animated"></span></span>
+      </div>
     </div>
 
-    <!-- [-014Mde] MODAL DE EDIÇÃO E DETALHES -->
-    <div class="modal-overlay" id="modal-edit-expense">
-        <div class="modal-card">
-            <div class="modal-header">
-                <button class="icon-btn" id="btn-close-modal-edit">
-                    <ion-icon name="arrow-back-outline"></ion-icon>
-                </button>
-                <h3 id="edit-modal-title">Editar Dívida</h3>
-                <div style="width: 24px;"></div>
-            </div>
-            <div class="modal-body">
-                <form id="form-edit-expense">
-                    <input type="hidden" id="edit-expense-id">
+    <p class="description">
+      Estamos a realizar melhorias programadas nos nossos servidores. Esta atualização garantirá mais estabilidade, segurança reforçada e maior velocidade no processamento das suas informações financeiras.
+    </p>
 
-                    <div class="form-group">
-                        <label>Empresa / Categoria</label>
-                        <select id="edit-expense-company" class="form-control" required>
-                            <option value="Outros">Outros / Geral</option>
-                            <option value="Vivo">Vivo</option>
-                            <option value="Claro">Claro</option>
-                            <option value="TIM">TIM</option>
-                            <option value="Nubank">Nubank</option>
-                            <option value="Itaú">Itaú</option>
-                            <option value="Bradesco">Bradesco</option>
-                            <option value="Santander">Santander</option>
-                            <option value="Caixa">Caixa</option>
-                            <option value="Energia (Enel/Equatorial)">Energia (Enel/Equatorial)</option>
-                            <option value="Água / Saneamento">Água / Saneamento</option>
-                            <option value="Internet / Fibra">Internet / Fibra</option>
-                            <option value="Supermercado">Supermercado</option>
-                            <option value="Aluguel / Condomínio">Aluguel / Condomínio</option>
-                            <option value="custom">+ Digitar outra empresa...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="edit-custom-company-group" style="display: none;">
-                        <label>Nome da Empresa Customizada</label>
-                        <input type="text" id="edit-expense-custom-company" class="form-control" placeholder="Digite o nome da empresa..." autocomplete="off">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Descrição da Dívida / Observações</label>
-                        <textarea id="edit-expense-description" class="form-control" required autocomplete="off"></textarea>
-                        <div class="char-counter" id="edit-char-counter">0 caracteres</div></div>
-
-                    <div class="form-group">
-                        <label>Valor (R$)</label>
-                        <input type="number" step="0.01" id="edit-expense-value" class="form-control" required autocomplete="off">
-                    </div>
-
-                    <div class="form-group" style="text-align: center;">
-                        <label style="font-size: 0.85rem; color: var(--text-muted);">Data de vencimento</label>
-                        <input type="date" id="edit-expense-date" class="form-control" style="text-align: center;" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Status do Pagamento</label>
-                        <div class="radio-group" style="justify-content: center;">
-                            <label class="radio-option">
-                                <input type="radio" name="edit-paid" value="false" id="edit-paid-false">
-                                <span>Pendente</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="edit-paid" value="true" id="edit-paid-true">
-                                <span>Pago</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary" style="margin-top: 15px;">Atualizar Dívida</button>
-                    <button type="button" class="btn-share" id="btn-share-expense">
-                        <ion-icon name="share-social-outline"></ion-icon> Compartilhar Dívida
-                    </button>
-                    <button type="button" class="btn-danger" id="btn-delete-expense">
-                        <ion-icon name="trash-outline"></ion-icon> Excluir Dívida
-                    </button>
-                </form>
-            </div>
-        </div>
+    <!-- Aviso sobre o Impacto -->
+    <div class="info-notice">
+      <i data-lucide="shield-alert"></i>
+      <span>Todos os serviços foram pausados temporariamente de forma segura para assegurar a integridade dos seus dados.</span>
     </div>
 
-    <!-- [-014Mdh] MODAL HISTÓRICO DE LOGS -->
-    <div class="modal-overlay" id="modal-history">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><ion-icon name="time-outline"></ion-icon> Histórico de Ações</h3>
-                <button class="icon-btn" id="btn-close-modal-history">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div class="modal-body">
-                <button type="button" class="btn-danger" id="btn-clear-logs" style="margin-bottom: 12px;">
-                    <ion-icon name="trash-bin-outline"></ion-icon> Limpar Histórico de Ações
-                </button>
-                <div class="history-list" id="history-list-container">
-                    <!-- Logs inseridos por script -->
-                </div>
-            </div>
+    <!-- Caixa do Horário Previsto para Retorno -->
+    <div class="progress-box">
+      <div class="return-time-container">
+        <span class="return-time-label">
+          <i data-lucide="clock" style="width: 15px; height: 15px;"></i> Horário Previsto de Retorno
+        </span>
+        <span class="return-time-span" id="returnTime">00:00</span>
+        <span class="current-step-text" id="currentStepText">A carregar informações...</span>
+      </div>
+
+      <div class="estimated-time">
+        <span>Tempo estimado restante: <span class="timer-badge" id="timeRemaining">A calcular...</span></span>
+        <span>Status: <strong style="color: var(--primary-color);">Atualização em Andamento<span class="dots-animated"></span></strong></span>
+      </div>
+
+      <!-- Timeline das Etapas Principais -->
+      <div class="steps-timeline" id="stepsTimeline">
+        <div class="timeline-step" id="step-0">
+          <i data-lucide="database"></i>
+          <span>Backup Geral</span>
         </div>
+        <div class="timeline-step" id="step-1">
+          <i data-lucide="hard-drive-upload"></i>
+          <span>Base de Dados</span>
+        </div>
+        <div class="timeline-step" id="step-2">
+          <i data-lucide="cpu"></i>
+          <span>Infraestrutura</span>
+        </div>
+        <div class="timeline-step" id="step-3">
+          <i data-lucide="check-circle-2"></i>
+          <span>Validação</span>
+        </div>
+      </div>
     </div>
 
-    <!-- [-014Mdu] MODAL ATUALIZAÇÕES -->
-    <div class="modal-overlay" id="modal-updates">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><ion-icon name="sparkles-outline"></ion-icon> Atualizações do Sistema</h3>
-                <button class="icon-btn" id="btn-close-modal-updates">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="updates-list">
-                    <div class="update-item">
-                        <div class="update-version">
-                            <span>Versão 1.1.1 (Estável)</span>
-                            <span class="update-date">16/08/2026</span>
-                        </div>
-                        <p class="update-desc">• Adicionado modal do Desenvolvedor Teddy Machado com atalho direto.<br>• Estruturação de código limpa e otimizada.<br>• Mapeamento de tags de identificação únicas.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Ações e Suporte -->
+    <div class="actions">
+      <button type="button" class="btn btn-primary" onclick="checkStatus(event)">
+        <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i>
+        Verificar Novamente
+      </button>
+      <button type="button" class="btn btn-secondary" onclick="notifyMe(event)">
+        <i data-lucide="bell" style="width: 16px; height: 16px;"></i>
+        Avisar quando concluir
+      </button>
     </div>
 
-    <!-- [-014Mdd] MODAL DESENVOLVEDOR -->
-    <div class="modal-overlay" id="modal-developer">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><ion-icon name="code-slash-outline"></ion-icon> Sobre o Desenvolvedor</h3>
-                <button class="icon-btn" id="btn-close-modal-developer">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="developer-card">
-                    <div class="developer-avatar">
-                        <ion-icon name="person-outline"></ion-icon>
-                    </div>
-                    <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">Teddy Machado</h2>
-                    <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4;">Desenvolvedor & Criador do DívidaZero.<br>Especialista em Aplicações Web & Mobile.</p>
-                    
-                    <div style="width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn instagram">
-                            <ion-icon name="logo-instagram" style="font-size: 1.3rem;"></ion-icon>
-                            <span>Siga no Instagram</span>
-                        </a>
-                        <button type="button" class="social-btn" id="btn-copy-dev-contact" style="background-color: var(--header-bg); border: 1px solid var(--border-color);">
-                            <ion-icon name="copy-outline" style="font-size: 1.2rem;"></ion-icon>
-                            <span>Copiar Contato</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="footer">
+      &copy; <span id="currentYear"></span> DívidaZero. Todos os direitos reservados.
     </div>
-    <!---scritps--->
-  <script src="Script.js" defer></script>
+  </main>
+
+  <!-- Notificação Toast -->
+  <div class="toast" id="toast">
+    <i data-lucide="check-circle" style="color: var(--success-color); width: 18px; height: 18px;"></i>
+    <span id="toastMsg">Sua solicitação foi registrada!</span>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       CONFIGURAÇÃO MANUAL DO HORÁRIO DE RETORNO (EDITÁVEL)
+       Exemplo: "14:30", "18:00". Se deixar vazio "", o sistema calcula automaticamente.
+    ------------------------------------------------------------- */
+    const MANUAL_RETURN_TIME = "15:00"; 
+
+    /* -------------------------------------------------------------
+       INICIALIZAÇÃO DE ÍCONES E INTERFACE
+    ------------------------------------------------------------- */
+    lucide.createIcons();
+
+    // Ano do Rodapé
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    /* -------------------------------------------------------------
+       SISTEMA DE CRONÔMETRO PERSISTENTE (PERSISTE AO RECARREGAR F5)
+    ------------------------------------------------------------- */
+    const DURATION_SECONDS = 3 * 3600 + 30 * 60; 
+    const STORAGE_KEY = 'dividaZero_maintenance_endTime';
+
+    function getEndTime() {
+      let endTime = localStorage.getItem(STORAGE_KEY);
+      const now = Date.now();
+
+      if (!endTime || isNaN(endTime) || Number(endTime) <= now) {
+        endTime = now + DURATION_SECONDS * 1000;
+        localStorage.setItem(STORAGE_KEY, endTime.toString());
+      }
+      return Number(endTime);
+    }
+
+    const targetTime = getEndTime();
+
+    const steps = [
+      { id: 0, percentRange: [0, 25], action: "A realizar backup completo de segurança..." },
+      { id: 1, percentRange: [25, 55], action: "A migrar e reestruturar a base de dados..." },
+      { id: 2, percentRange: [55, 85], action: "A atualizar a infraestrutura e os servidores..." },
+      { id: 3, percentRange: [85, 100], action: "A executar testes finais de validação..." }
+    ];
+
+    const returnTime = document.getElementById('returnTime');
+    const currentStepText = document.getElementById('currentStepText');
+    const timeRemaining = document.getElementById('timeRemaining');
+
+    function formatTime(totalSeconds) {
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+
+      const pad = (num) => String(num).padStart(2, '0');
+      return `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+    }
+
+    function formatTargetClock(targetTimestamp) {
+      // Se houver um horário manual configurado, utiliza-o
+      if (typeof MANUAL_RETURN_TIME === 'string' && MANUAL_RETURN_TIME.trim() !== "") {
+        return MANUAL_RETURN_TIME.trim();
+      }
+      const date = new Date(targetTimestamp);
+      const pad = (num) => String(num).padStart(2, '0');
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+      return `${hours}:${minutes}`;
+    }
+
+    function updateTimeline(activeStepId) {
+      for (let i = 0; i < 4; i++) {
+        const stepEl = document.getElementById(`step-${i}`);
+        if (!stepEl) continue;
+
+        stepEl.classList.remove('completed', 'active');
+        if (i < activeStepId) {
+          stepEl.classList.add('completed');
+        } else if (i === activeStepId) {
+          stepEl.classList.add('active');
+        }
+      }
+    }
+
+    function updateProgressUI() {
+      const now = Date.now();
+      const remainingMs = targetTime - now;
+      const remainingSeconds = Math.max(0, Math.floor(remainingMs / 1000));
+
+      if (remainingSeconds <= 0) {
+        returnTime.textContent = formatTargetClock(targetTime);
+        currentStepText.textContent = "Manutenção concluída!";
+        timeRemaining.textContent = 'Pronto!';
+        updateTimeline(4);
+        return;
+      }
+
+      const totalMs = DURATION_SECONDS * 1000;
+      const elapsedMs = totalMs - remainingMs;
+      const currentPercent = Math.min(100, Math.max(0, Math.floor((elapsedMs / totalMs) * 100)));
+
+      const currentStep = steps.find(s => currentPercent >= s.percentRange[0] && currentPercent <= s.percentRange[1]) || steps[steps.length - 1];
+      
+      // Atualizar o span do horário no formato HH:MM
+      returnTime.textContent = formatTargetClock(targetTime);
+      currentStepText.textContent = currentStep.action;
+
+      updateTimeline(currentStep.id);
+      timeRemaining.textContent = formatTime(remainingSeconds);
+    }
+
+    setInterval(updateProgressUI, 1000);
+    updateProgressUI();
+
+    /* -------------------------------------------------------------
+       INTERAÇÕES E NOTIFICAÇÕES (SEM RECARREGAR PÁGINA)
+    ------------------------------------------------------------- */
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      
+      toastMsg.textContent = message;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    function checkStatus(e) {
+      if (e) e.preventDefault();
+      updateProgressUI();
+      showToast('Status sincronizado! A atualização segue em andamento.');
+    }
+
+    function notifyMe(e) {
+      if (e) e.preventDefault();
+      showToast('Notificação ativada! Você receberá um aviso ao término.');
+    }
+  </script>
 </body>
 </html>
