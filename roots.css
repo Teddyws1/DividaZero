@@ -3,7 +3,8 @@
   --primary-color: #00a86b;
   --primary-dark: #007a4d;
   --header-bg: #0f172a;
-  --accent-orange: #f97316;
+  --accent-orange: #00a86b;
+  --color-titulo:#ea580c;
   --accent-orange-hover: #ea580c;
   --bg-main: #f1f5f9;
   --bg-card: #ffffff;
@@ -15,10 +16,14 @@
   --share-color: #2563eb;
   --success-color: #10b981;
   --sidebar-width: 290px;
+  --fubdo-do-theme:#F5F5F5;
 }
 
 .theme-dark {
+  --accent-orange: #ea580c;
+  --color-titulo:#FFFFFF;
   --primary-color: #059669;
+  --fubdo-do-theme:#0f172a;
   --primary-dark: #047857;
   --header-bg: #020617;
   --bg-main: #090d16;

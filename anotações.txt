@@ -1,6 +1,9 @@
 ======[identificação ids códigos]=======
 
 -001PA : Instalação PWA
+-113wz Sobre o Desenvolvedor
+-420ka titulos 
+-294pq CICLO DO FOOTER — ARRASTE VERTICAL  
 
 
 
@@ -19,16 +22,25 @@
 
 
 
-
-
-
-
-
+============== [versões] ===============
+versoes
+v=14
 
 =====[estilo de anotações para js]======
 
 //////////////////////////////////////
 //
-// -001PA : Instalação PWA
+// -
 //
 /////////////////////////////////////
+
+====[estilo de anotações para css]======
+
+/*////////////////////////////////////
+//
+// -
+//
+///////////////////////////////////*/
+
+/*============[ fim ]=============*/
+

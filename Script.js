@@ -51,14 +51,14 @@ const dom = {
   sidebarOverlay: document.getElementById('sidebar-overlay'),
   menuItemHistory: document.getElementById('menu-item-history'),
   menuItemUpdates: document.getElementById('menu-item-updates'),
-  menuItemTheme: document.getElementById('menu-item-theme'),
+
   menuItemExport: document.getElementById('menu-item-export'),
   menuItemImport: document.getElementById('menu-item-import'),
   menuItemDeveloper: document.getElementById('menu-item-developer'),
   importFileInput: document.getElementById('import-file-input'),
   themeIcon: document.getElementById('theme-icon'),
   themeText: document.getElementById('theme-text'),
-  
+  menuItemTheme: document.getElementById('menu-item-theme'),
   modalExpense: document.getElementById('modal-add-expense'),
   btnCloseModalExpense: document.getElementById('btn-close-modal-expense'),
   formExpense: document.getElementById('form-expense'),
@@ -394,25 +394,56 @@ function renderHistory() {
     item.className = 'history-item';
     item.innerHTML = `
                         <div style="font-size: 0.85rem; font-weight: bold; color: var(--primary-color);">${log.action}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">${log.timestamp} - ID Log: ${log.id}</div>
+                        <div style="font-size: 0.75rem; color: var (--text-muted); margin-top: 4px;">${log.timestamp} - ID Log: ${log.id}</div>
                     `;
     dom.historyListContainer.appendChild(item);
   });
 }
 
+// •049At APLICAR TEMA
+
 function applyTheme(theme) {
+  
   state.theme = theme;
   if (theme === 'dark') {
-    document.documentElement.classList.remove('theme-light');
-    document.documentElement.classList.add('theme-dark');
-    dom.themeIcon.setAttribute('name', 'sun-outline');
-    dom.themeText.textContent = 'Modo Claro';
+    
+    document.documentElement.classList.remove(
+      'theme-light'
+    );
+    
+    document.documentElement.classList.add(
+      'theme-dark'
+    );
+    
+    // 🌙 Tema escuro
+    dom.themeIcon.setAttribute(
+      'name',
+      'moon-outline'
+    );
+    
+    dom.themeText.textContent =
+      'Escuro';
+    
   } else {
-    document.documentElement.classList.remove('theme-dark');
-    document.documentElement.classList.add('theme-light');
-    dom.themeIcon.setAttribute('name', 'moon-outline');
-    dom.themeText.textContent = 'Modo Escuro';
+    
+    document.documentElement.classList.remove(
+      'theme-dark'
+    );
+    
+    document.documentElement.classList.add(
+      'theme-light'
+    );
+    
+    // ☀️ Tema claro
+    dom.themeIcon.setAttribute(
+      'name',
+      'sunny-outline'
+    );
+    
+    dom.themeText.textContent =
+      'Claro';
   }
+  
   saveData();
 }
 
@@ -461,14 +492,16 @@ dom.menuItemDeveloper.addEventListener('click', () => {
 dom.btnCloseModalDeveloper.addEventListener('click', () => closeModal(dom.modalDeveloper));
 
 dom.btnCopyDevContact.addEventListener('click', () => {
-  const devContactInfo = "Desenvolvedor: Teddy Machado\nAplicação: DívidaZero 2026™";
   const tempTextArea = document.createElement('textarea');
   tempTextArea.value = devContactInfo;
   document.body.appendChild(tempTextArea);
   tempTextArea.select();
   document.execCommand('copy');
-  document.body.removeChild(tempTextArea);
-  alert('Contato do desenvolvedor copiado para a área de transferência!');
+document.body.removeChild(tempTextArea);
+
+showToast(
+  "Contato do desenvolvedor copiado para a área de transferência!"
+);
 });
 
 dom.menuItemUpdates.addEventListener('click', () => {
@@ -576,13 +609,17 @@ dom.btnShareExpense.addEventListener('click', () => {
     const formattedDate = dateObj.toLocaleDateString('pt-BR');
     const statusText = debt.paid ? 'PAGO' : 'PENDENTE';
     
-    const shareText = `📌 DívidaZero - Detalhes da Conta\n\n` +
-      `• ID: #${debt.id}\n` +
-      `• Empresa: ${debt.company || 'Outros'}\n` +
-      `• Descrição: ${debt.description}\n` +
-      `• Valor: ${formatCurrency(debt.value)}\n` +
-      `• Vencimento: ${formattedDate}\n` +
-      `• Status: ${statusText}`;
+  const shareText =
+  `📌 DívidaZero - Detalhes da Conta
+• Empresa: ${debt.company || 'Outros'}
+• Descrição: ${debt.description}
+• Valor: ${formatCurrency(debt.value)}
+• Vencimento: ${formattedDate}
+• ID: #${debt.id}
+• Status: ${statusText}
+
+🔗 Acesse o DívidaZero:
+https://teddyws1.github.io/DividaZero/`;
     
     if (navigator.share) {
       navigator.share({
@@ -706,3 +743,622 @@ window.addEventListener("appinstalled", () => {
     installApp.hidden = true;
   }
 });
+
+//////////////////////////////////////
+//
+// -113wz Sobre o Desenvolvedor
+//
+/////////////////////////////////////
+
+/* [-054Sh] SISTEMA DE COMPARTILHAMENTO DO DÍVIDAZERO */
+
+const DIVIDA_ZERO_URL =
+  "https://teddyws1.github.io/DividaZero/";
+
+const DIVIDA_ZERO_TITLE =
+  "DívidaZero - Gestão Inteligente de Dívidas";
+
+const DIVIDA_ZERO_MESSAGE =
+  "Conheça o DívidaZero — Gestão Inteligente de Dívidas.";
+
+
+/* [-055El] ELEMENTOS DO MODAL */
+
+const btnShareSite =
+  document.getElementById("btn-share-site");
+
+const modalShareSite =
+  document.getElementById("modal-share-site");
+
+const btnCloseModalShare =
+  document.getElementById("btn-close-modal-share");
+
+
+/* [-056Op] OPÇÕES DE COMPARTILHAMENTO */
+
+const shareWhatsapp =
+  document.getElementById("share-whatsapp");
+
+const shareFacebook =
+  document.getElementById("share-facebook");
+
+const shareInstagram =
+  document.getElementById("share-instagram");
+
+const shareCopyLink =
+  document.getElementById("share-copy-link");
+
+
+/* [-057Ab] ABRIR MODAL */
+
+function openShareModal() {
+  
+  if (!modalShareSite) return;
+  
+  modalShareSite.classList.add("active");
+  
+}
+
+
+/* [-058Fc] FECHAR MODAL */
+
+function closeShareModal() {
+  
+  if (!modalShareSite) return;
+  
+  modalShareSite.classList.remove("active");
+  
+}
+
+
+/* [-059Bt] BOTÃO COMPARTILHAR */
+
+if (btnShareSite) {
+  
+  btnShareSite.addEventListener("click", () => {
+    
+    openShareModal();
+    
+  });
+  
+}
+
+
+/* [-060Fx] BOTÃO FECHAR */
+
+if (btnCloseModalShare) {
+  
+  btnCloseModalShare.addEventListener(
+    "click",
+    closeShareModal
+  );
+  
+}
+
+
+/* [-061Wa] WHATSAPP */
+
+if (shareWhatsapp) {
+  
+  shareWhatsapp.addEventListener("click", () => {
+    
+    const message = encodeURIComponent(
+      `${DIVIDA_ZERO_MESSAGE}\n\n${DIVIDA_ZERO_URL}`
+    );
+    
+    const whatsappUrl =
+      `https://wa.me/?text=${message}`;
+    
+    window.open(
+      whatsappUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    
+  });
+  
+}
+
+
+/* [-062Fb] FACEBOOK */
+
+if (shareFacebook) {
+  
+  shareFacebook.addEventListener("click", () => {
+    
+    const url =
+      encodeURIComponent(DIVIDA_ZERO_URL);
+    
+    const facebookUrl =
+      `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    
+    window.open(
+      facebookUrl,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    
+  });
+  
+}
+
+
+/* [-063Ig] INSTAGRAM */
+
+if (shareInstagram) {
+  
+  shareInstagram.addEventListener(
+    "click",
+    async () => {
+      
+      try {
+        
+        if (navigator.share) {
+          
+          await navigator.share({
+            
+            title: DIVIDA_ZERO_TITLE,
+            
+            text: DIVIDA_ZERO_MESSAGE,
+            
+            url: DIVIDA_ZERO_URL
+            
+          });
+          
+        } else {
+          
+          await navigator.clipboard.writeText(
+            DIVIDA_ZERO_URL
+          );
+          
+          alert(
+            "Link do DívidaZero copiado!"
+          );
+          
+        }
+        
+      } catch (error) {
+        
+        if (error.name !== "AbortError") {
+          
+          console.error(
+            "Erro ao compartilhar:",
+            error
+          );
+          
+        }
+        
+      }
+      
+    }
+  );
+  
+}
+
+
+/* [-064Cp] COPIAR LINK */
+
+// •053Cp COPIAR LINK DO DÍVIDAZERO
+
+if (shareCopyLink) {
+  
+  shareCopyLink.addEventListener(
+    "click",
+    async () => {
+      
+      try {
+        
+        await navigator.clipboard.writeText(
+          DIVIDA_ZERO_URL
+        );
+        
+        showToast(
+          "Link do DívidaZero copiado!"
+        );
+        
+      } catch (error) {
+        
+        console.error(
+          "Erro ao copiar o link:",
+          error
+        );
+        
+        showToast(
+          "Não foi possível copiar o link.",
+          "error"
+        );
+        
+      }
+      
+    }
+  );
+  
+}
+
+
+/* [-065Of] FECHAR CLICANDO FORA */
+
+if (modalShareSite) {
+  
+  modalShareSite.addEventListener(
+    "click",
+    (event) => {
+      
+      if (event.target === modalShareSite) {
+        
+        closeShareModal();
+        
+      }
+      
+    }
+  );
+  
+}
+
+
+/* [-066Es] FECHAR COM ESC */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+    
+    if (
+      event.key === "Escape" &&
+      modalShareSite &&
+      modalShareSite.classList.contains("active")
+    ) {
+      
+      closeShareModal();
+      
+    }
+    
+  }
+);
+const devContactInfo =
+  "Teddy Machado\n" +
+  "Desenvolvedor e Criador do DívidaZero\n" +
+  "DívidaZero 2026™\n\n" +
+  "Instagram:\n" +
+  "https://www.instagram.com/teddy_machado007\n\n" +
+  "Mais projetos e códigos:\n" +
+  "https://github.com/Teddyws1";
+  
+ ///==============================///
+function showToast(message, type = "success") {
+  const oldToast = document.querySelector(".toast-message");
+  
+  if (oldToast) {
+    oldToast.remove();
+  }
+  
+  const toast = document.createElement("div");
+  
+  toast.className = `toast-message ${type}`;
+  
+  toast.innerHTML = `
+        <ion-icon
+            name="${type === "success" ? "checkmark-circle-outline" : "alert-circle-outline"}"
+        ></ion-icon>
+
+        <span>${message}</span>
+    `;
+  
+  document.body.appendChild(toast);
+  
+  requestAnimationFrame(() => {
+    toast.classList.add("active");
+  });
+  
+  setTimeout(() => {
+    toast.classList.remove("active");
+    
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 250);
+    
+  }, 2500);
+}
+
+//////////////////////////////////////
+//
+// -294pq CICLO DO FOOTER — ARRASTE VERTICAL  
+//
+/////////////////////////////////////
+
+// •108Fd FECHAMENTO INSTANTÂNEO AO ARRASTAR PARA BAIXO
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const drawer =
+        document.getElementById("footer-drawer");
+
+    const handle =
+        document.getElementById("footer-drag-handle");
+
+    if (!drawer || !handle) return;
+
+
+    let startY = 0;
+    let startPosition = 0;
+    let currentPosition = 0;
+
+    let drawerHeight = 0;
+    let dragging = false;
+    let closedByDrag = false;
+
+
+    // •109Bl VERIFICAR MODAL OU ABA LATERAL
+
+    function isBlocked() {
+
+        const modal =
+            document.querySelector(
+                ".modal-overlay.active, " +
+                ".modal.active, " +
+                ".image-modal-overlay.active"
+            );
+
+        const sidebar =
+            document.querySelector(
+                "#sidebar.active, " +
+                ".sidebar.active"
+            );
+
+        return !!modal || !!sidebar;
+    }
+
+
+    // •110Fc FECHAR FOOTER INSTANTANEAMENTE
+
+    function closeFooterInstant() {
+
+        updateHeight();
+
+        currentPosition = drawerHeight;
+
+        drawer.style.transition = "none";
+
+        drawer.style.transform =
+            `translateY(${drawerHeight}px)`;
+
+        closedByDrag = true;
+        dragging = false;
+
+    }
+
+
+    // •111Uh ATUALIZAR ALTURA
+
+    function updateHeight() {
+
+        drawerHeight =
+            drawer.offsetHeight;
+
+    }
+
+
+    // •112Ps DEFINIR POSIÇÃO
+
+    function setPosition(position) {
+
+        currentPosition =
+            Math.max(
+                0,
+                Math.min(
+                    drawerHeight,
+                    position
+                )
+            );
+
+        drawer.style.transform =
+            `translateY(${currentPosition}px)`;
+
+    }
+
+
+    // •113St INICIAR ARRASTE
+
+    function startDrag(event) {
+
+        if (event.touches.length !== 1) {
+            return;
+        }
+
+        if (isBlocked()) {
+
+            closeFooterInstant();
+
+            return;
+
+        }
+
+        updateHeight();
+
+        startY =
+            event.touches[0].clientY;
+
+        startPosition =
+            currentPosition;
+
+        closedByDrag = false;
+
+        dragging = true;
+
+        drawer.style.transition =
+            "none";
+
+    }
+
+
+    // •114Mv ACOMPANHAR MOVIMENTO
+
+    function moveDrag(event) {
+
+        if (!dragging) return;
+
+        if (isBlocked()) {
+
+            closeFooterInstant();
+
+            return;
+
+        }
+
+
+        const fingerY =
+            event.touches[0].clientY;
+
+        const difference =
+            fingerY - startY;
+
+
+        /*
+         * APENAS 5PX PARA BAIXO
+         * FECHA IMEDIATAMENTE.
+         */
+
+        if (difference >= 5) {
+
+            closeFooterInstant();
+
+            return;
+
+        }
+
+
+        /*
+         * Movimento normal para cima.
+         */
+
+        setPosition(
+            startPosition + difference
+        );
+
+    }
+
+
+    // •115Ed FINALIZAR ARRASTE
+
+    function endDrag() {
+
+        if (!dragging) return;
+
+        dragging = false;
+
+
+        if (closedByDrag) {
+            return;
+        }
+
+
+        if (isBlocked()) {
+
+            closeFooterInstant();
+
+            return;
+
+        }
+
+
+        drawer.style.transition =
+            "transform 0.12s ease-out";
+
+        setPosition(currentPosition);
+
+    }
+
+
+    // •116Ts EVENTOS DE TOQUE
+
+    handle.addEventListener(
+        "touchstart",
+        startDrag,
+        { passive: true }
+    );
+
+
+    handle.addEventListener(
+        "touchmove",
+        moveDrag,
+        { passive: true }
+    );
+
+
+    handle.addEventListener(
+        "touchend",
+        endDrag,
+        { passive: true }
+    );
+
+
+    handle.addEventListener(
+        "touchcancel",
+        endDrag,
+        { passive: true }
+    );
+
+
+    // •117Ob OBSERVAR MODAIS E SIDEBAR
+
+    const observer =
+        new MutationObserver(() => {
+
+            if (isBlocked()) {
+
+                closeFooterInstant();
+
+            }
+
+        });
+
+
+    observer.observe(
+        document.body,
+        {
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["class"]
+        }
+    );
+
+
+    // •118Rs REDIMENSIONAMENTO
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            updateHeight();
+
+            if (currentPosition > drawerHeight) {
+
+                currentPosition =
+                    drawerHeight;
+
+                drawer.style.transform =
+                    `translateY(${drawerHeight}px)`;
+
+            }
+
+        }
+    );
+
+
+    // •119In INICIAR 100% ESCONDIDO
+
+    updateHeight();
+
+    currentPosition =
+        drawerHeight;
+
+    drawer.style.transform =
+        `translateY(${drawerHeight}px)`;
+
+});
+//////////////////////////////////////
+//
+// fim  
+//
+/////////////////////////////////////

@@ -1,28 +1,26 @@
-# 💰 DívidaZero
+💰 DívidaZero
 
-> 💰 Sistema web para organização e controle de dívidas.
+DívidaZero é um sistema web desenvolvido para ajudar na organização, acompanhamento e controle de dívidas de forma simples e intuitiva.
 
-## 🎯 Objetivo
+🎯 Objetivo: facilitar a visualização das dívidas e ajudar o usuário a acompanhar seu progresso até ficar livre delas.
 
-O DívidaZero foi desenvolvido para ajudar na organização,
-acompanhamento e controle de dívidas de forma simples e intuitiva.
+🌐 Acesse o projeto
 
-## 🌐 Acesse
+👉 "DívidaZero — Abrir sistema" (https://teddyws1.github.io/DividaZero/)
 
-👉 [Abrir DívidaZero](https://teddyws1.github.io/DividaZero/)
-
-## ✨ Recursos
+✨ Funcionalidades
 
 - 💳 Cadastro de dívidas
+- 📊 Organização das informações financeiras
 - 💰 Controle de valores
-- 📊 Acompanhamento
-- 📅 Controle de pagamentos
+- 📅 Acompanhamento de pagamentos
+- 📈 Visualização do progresso
+- 🔎 Pesquisa e organização dos registros
 - 🌓 Modo claro e escuro
-- 📱 Interface responsiva
-- 💾 Armazenamento local
-- 📲 PWA
+- 📱 Interface responsiva para celular, tablet e computador
+- 💾 Armazenamento dos dados no navegador
 
-## 🛠️ Tecnologias
+🛠️ Tecnologias utilizadas
 
 - HTML5
 - CSS3
@@ -31,8 +29,45 @@ acompanhamento e controle de dívidas de forma simples e intuitiva.
 - LocalStorage
 - PWA
 
-## 👨‍💻 Desenvolvedor
+📱 Compatibilidade
 
-**Teddyws1**
+O DívidaZero foi desenvolvido para funcionar em:
 
-[GitHub](https://github.com/Teddyws1)
+- 📱 Celulares
+- 📲 Tablets
+- 💻 Computadores
+- 🌐 Navegadores modernos
+
+🎨 Interface
+
+O sistema possui uma interface simples e responsiva, com foco em facilitar o gerenciamento das informações e tornar o acompanhamento das dívidas mais claro.
+
+📂 Estrutura
+
+DividaZero/
+├── index.html
+├── style.css
+├── script.js
+├── manifest.json
+├── service-worker.js
+└── README.md
+
+«A estrutura pode ser alterada conforme a evolução do projeto.»
+
+🚀 Objetivo do projeto
+
+O DívidaZero nasceu com a ideia de transformar o controle de dívidas em algo mais organizado, visual e fácil de acompanhar.
+
+A proposta é permitir que o usuário tenha uma visão clara de suas dívidas e consiga acompanhar sua evolução até alcançar o objetivo:
+
+🎯 Dívida Zero.
+
+👨‍💻 Desenvolvedor
+
+Desenvolvido por Teddyws1.
+
+🐙 GitHub: "github.com/Teddyws1" (https://github.com/Teddyws1)
+
+---
+
+⭐ Se o projeto for útil para você, deixe uma estrela no repositório!

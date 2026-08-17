@@ -2,15 +2,15 @@
     "name": "DívidaZero",
     "short_name": "DívidaZero",
     "description": "Aplicativo web instalável.",
-    "start_url": "https://teddyws1.github.io/DividaZero/",
-    "scope": "/DividaZero/",
+    "start_url": "./",
+    "scope": "./",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#0f172a",
     "theme_color": "#0f172a",
     "icons": [
         {
-            "src": "https://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg",
+            "src": "https://i.postimg.cc/9Q9RYSD4/Picsart-26-08-16-12-23-31-285.png",
             "sizes": "512x512",
             "type": "image/jpeg",
             "purpose": "any maskable"
