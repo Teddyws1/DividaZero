@@ -23,8 +23,12 @@
 
 
 ============== [versões] ===============
-versoes
-v=14
+versoes 
+versao atual
+v=03
+img.
+
+ttps://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg
 
 =====[estilo de anotações para js]======
 
