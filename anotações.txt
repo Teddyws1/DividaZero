@@ -4,7 +4,8 @@
 -113wz Sobre o Desenvolvedor
 -420ka titulos 
 -294pq CICLO DO FOOTER — ARRASTE VERTICAL  
-
+-004n ids aleatórios
+-49kk Instalação PWA
 
 
 
@@ -25,7 +26,7 @@
 ============== [versões] ===============
 versoes 
 versao atual
-v=03
+v=02
 img.
 
 ttps://i.postimg.cc/1XBThB5s/Picsart-26-08-16-10-16-48-167.jpg

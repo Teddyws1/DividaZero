@@ -52,7 +52,7 @@
         /* 1.3 CABEÇALHO DO APLICATIVO (HEADER) [-006Hd] */
         .app-header {
             background-color: var(--header-bg);
-            color: #ffffff;
+            color: #FFFFFF;
             padding: 14px 18px;
             display: flex;
             align-items: center;
@@ -1445,3 +1445,92 @@
 // fim do css
 //
 ///////////////////////////////////*/
+/* Fundo escuro com desfoque */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+/* Caixa centralizada */
+.custom-modal-box {
+    background: var(--bg-card, #ffffff);
+    color: var(--text-color, #222222);
+    padding: 24px;
+    border-radius: 16px;
+    max-width: 360px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    animation: scaleUpModal 0.2s ease-out;
+}
+
+.custom-modal-icon {
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+}
+
+.custom-modal-title {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e63946;
+}
+
+.custom-modal-message {
+    font-size: 0.92rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    color: var(--text-muted, #666666);
+}
+
+/* Container de Botões */
+.custom-modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.custom-modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.btn-modal-secondary {
+    background: var(--bg-body, #e0e0e0);
+    color: var(--text-color, #333333);
+}
+
+.btn-modal-danger {
+    background: #e63946;
+    color: #ffffff;
+}
+
+.custom-modal-actions button:active {
+    opacity: 0.8;
+}
+
+/* Animações */
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUpModal {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+}

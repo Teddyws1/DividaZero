@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="style.css?v=03">
     <link rel="stylesheet" href="roots.css?v=03">
 
+ <link rel="stylesheet" href="responsivo.css?v=03">
+
     <link rel="manifest" href="manifest.json">
 
     <meta name="theme-color" content="#0f172a">
@@ -165,12 +167,12 @@
 
                 <ion-icon name="search-outline"></ion-icon>
 
-                <input
-                    type="text"
-                    id="search-input"
-                    class="search-input"
-                    placeholder="Buscar por nome, id, empresa (Vivo, Claro)..."
-                >
+<input
+    type="text"
+    id="search-input"
+    class="search-input"
+    placeholder="Buscar por descrição, código ID ou empresa..."
+>
 
             </div>
 
@@ -349,7 +351,12 @@
                 </span>
             </button>
             <br>
+            <button type="button" class="menu-item" id="menu-item-clean">
+    <ion-icon name="trash-bin-outline"></ion-icon>
+    <span id="label-clean-dividas">Clean</span>
+</button>
 
+            <br>
             <button
                 type="button"
                 class="menu-item"
@@ -451,63 +458,9 @@
                             required
                         >
                             <option value="Outros">
-                                Outros / Geral
-                            </option>
-
-                            <option value="Vivo">
-                                Vivo
-                            </option>
-
-                            <option value="Claro">
-                                Claro
-                            </option>
-
-                            <option value="TIM">
-                                TIM
-                            </option>
-
-                            <option value="Nubank">
-                                Nubank
-                            </option>
-
-                            <option value="Itaú">
-                                Itaú
-                            </option>
-
-                            <option value="Bradesco">
-                                Bradesco
-                            </option>
-
-                            <option value="Santander">
-                                Santander
-                            </option>
-
-                            <option value="Caixa">
-                                Caixa
-                            </option>
-
-                            <option value="Energia (Enel/Equatorial)">
-                                Energia (Enel/Equatorial)
-                            </option>
-
-                            <option value="Água / Saneamento">
-                                Água / Saneamento
-                            </option>
-
-                            <option value="Internet / Fibra">
-                                Internet / Fibra
-                            </option>
-
-                            <option value="Supermercado">
-                                Supermercado
-                            </option>
-
-                            <option value="Aluguel / Condomínio">
-                                Aluguel / Condomínio
-                            </option>
-
-                            <option value="custom">
-                                + Digitar outra empresa...
+                        Outras Origens
+                       <option value="custom">
+                            Nova empresa...
                             </option>
 
                         </select>
