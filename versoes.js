@@ -1,11 +1,14 @@
 const systemUpdates = [
     {
-    version: "1.3.0",
+    version: "1.4.0",
     status: "Estável",
     date: "23/08/2026",
     description: [
-        "novo sistema se apagar dívida."
-    
+  "novo sistema para exclusão de dívidas.",
+" novas aba de histórico.",
+"novo sistema de gráficos no estilo pizza.",
+"sistema de histórico mensal.",
+"sistema que exibe os maiores valores do mês atual e do mês anterior."
     ],
     url: "https://teddyws1.github.io/DividaZero/"
 },

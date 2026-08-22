@@ -158,16 +158,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    function updateMonthDisplay() {
-        const monthNames = [
-            "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-            "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
-        ];
-        const month = monthNames[state.currentDate.getMonth()];
-        const year = state.currentDate.getFullYear();
-        dom.currentMonthDisplay.textContent = `${month} / ${year}`;
-    }
-
+//////////////////////////////////////
+//
+// -402IV mês do ano 
+//
+/////////////////////////////////////
+function updateMonthDisplay() {
+    const monthNames = [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro"
+    ];
+    
+    const month = monthNames[state.currentDate.getMonth()];
+    const monthNumber = state.currentDate.getMonth() + 1;
+    const year = state.currentDate.getFullYear();
+    
+    dom.currentMonthDisplay.textContent =
+        `${month} ${monthNumber} / ${year}`;
+}
     //////////////////////////////////////
     //
     // - RENDERIZAÇÃO DE DÍVIDAS
