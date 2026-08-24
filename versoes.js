@@ -1,4 +1,13 @@
 const systemUpdates = [
+            {
+          version: "1.5.1",
+          status: "Estável",
+          date: "24/08/2026",
+          description: [
+            "novo sistema de filtro na barra de pesquisa por VALORES agora"
+          ],
+          url: "https://teddyws1.github.io/DividaZero/"
+      },
       {
       version: "1.4.1",
       status: "Estável",
