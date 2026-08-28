@@ -9,11 +9,9 @@
 -402IV mês do ano 
 -41UV Botão no menu da página principal
 -029LO sistema de Scroll entre páginas
-
-
-
-
-
+-513TT barra de pesquisa
+-208JJ botao adicionar nova despesas
+-920wq botao sobre site
 
 
 

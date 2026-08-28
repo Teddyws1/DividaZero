@@ -1300,6 +1300,7 @@ function triggerBookPageTurn(direction) {
     }, 250);
 }
 
+
 /////////////////////////////////////
 //
 // - FIM DO JS 

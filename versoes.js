@@ -1,4 +1,13 @@
 const systemUpdates = [
+                {
+                version: "1.6.0",
+                status: "Estável",
+                date: "28/08/2026",
+                description: [
+                    "nova aba sobre o site"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
             {
           version: "1.5.1",
           status: "Estável",
