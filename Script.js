@@ -260,7 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="debt-info">
                         <div class="debt-header-info">
                             <span class="debt-tag-id">ID: ${debt.id}</span>
-                            <span class="debt-company-badge"><ion-icon name="business-outline"></ion-icon>${companyName}</span>
+                <span class="debt-company-badge">
+    <ion-icon name="${
+        companyName.toLowerCase() === 'outros'
+            ? 'ellipsis-horizontal-circle-outline'
+            : 'business-outline'
+    }"></ion-icon>
+    ${companyName}
+</span>
                         </div>
                         <span class="debt-title">${debt.description}</span>
                         <div class="debt-date">
@@ -709,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `• Valor: ${formatCurrency(debt.value)}\n` +
                 `• Vencimento: ${formattedDate}\n` +
                 `• ID: #${debt.id}\n` +
-                `• Status: ${statusText}\n\n` +
+                `• Status de pagamento: ${statusText}\n\n` +
                 `🔗 Acesse o DívidaZero:\n` +
                 `https://teddyws1.github.io/DividaZero/`;
 
@@ -1014,30 +1021,27 @@ function showToast(message, type = "success") {
         }, 250);
     }, 2500);
 }
-
-    //////////////////////////////////////
-    //
-    // - INTERAÇÃO TOUCH DRAWER DO RODAPÉ
-    //
-    //////////////////////////////////////
+///////////////////////////////////
+//-294pq CICLO DO FOOTER — ARRASTE VERTICAL
+////////////////////////////////////
 document.addEventListener("DOMContentLoaded", () => {
     const drawer = document.getElementById("footer-drawer");
     const handle = document.getElementById("footer-drag-handle");
     if (!drawer || !handle) return;
-
+    
     let startY = 0;
     let startPosition = 0;
     let currentPosition = 0;
     let drawerHeight = 0;
     let dragging = false;
     let closedByDrag = false;
-
+    
     function isBlocked() {
         const modal = document.querySelector(".modal-overlay.active, .modal.active, .image-modal-overlay.active");
         const sidebar = document.querySelector("#sidebar.active, .sidebar.active");
         return !!modal || !!sidebar;
     }
-
+    
     function closeFooterInstant() {
         updateHeight();
         currentPosition = drawerHeight;
@@ -1046,16 +1050,16 @@ document.addEventListener("DOMContentLoaded", () => {
         closedByDrag = true;
         dragging = false;
     }
-
+    
     function updateHeight() {
         drawerHeight = drawer.offsetHeight;
     }
-
+    
     function setPosition(position) {
         currentPosition = Math.max(0, Math.min(drawerHeight, position));
         drawer.style.transform = `translateY(${currentPosition}px)`;
     }
-
+    
     function startDrag(event) {
         if (event.touches.length !== 1) return;
         if (isBlocked()) {
@@ -1069,54 +1073,54 @@ document.addEventListener("DOMContentLoaded", () => {
         dragging = true;
         drawer.style.transition = "none";
     }
-
+    
     function moveDrag(event) {
         if (!dragging) return;
         if (isBlocked()) {
             closeFooterInstant();
             return;
         }
-
+        
         const fingerY = event.touches[0].clientY;
         const difference = fingerY - startY;
-
+        
         if (difference >= 5) {
             closeFooterInstant();
             return;
         }
-
+        
         setPosition(startPosition + difference);
     }
-
+    
     function endDrag() {
         if (!dragging) return;
         dragging = false;
-
+        
         if (closedByDrag) return;
         if (isBlocked()) {
             closeFooterInstant();
             return;
         }
-
+        
         drawer.style.transition = "transform 0.12s ease-out";
         setPosition(currentPosition);
     }
-
+    
     handle.addEventListener("touchstart", startDrag, { passive: true });
     handle.addEventListener("touchmove", moveDrag, { passive: true });
     handle.addEventListener("touchend", endDrag, { passive: true });
     handle.addEventListener("touchcancel", endDrag, { passive: true });
-
+    
     const observer = new MutationObserver(() => {
         if (isBlocked()) closeFooterInstant();
     });
-
+    
     observer.observe(document.body, {
         subtree: true,
         attributes: true,
         attributeFilter: ["class"]
     });
-
+    
     window.addEventListener("resize", () => {
         updateHeight();
         if (currentPosition > drawerHeight) {
@@ -1124,181 +1128,11 @@ document.addEventListener("DOMContentLoaded", () => {
             drawer.style.transform = `translateY(${drawerHeight}px)`;
         }
     });
-
+    
     updateHeight();
     currentPosition = drawerHeight;
     drawer.style.transform = `translateY(${drawerHeight}px)`;
 });
-
-/////////////////////////////////////
-//
-// - SISTEMA DE SCROLL ENTRE PÁGINAS 
-//
-////////////////////////////////////
-let bookSwipeStartX = 0;
-let bookSwipeStartY = 0;
-let bookMouseIsDown = false;
-let bookMouseStartX = 0;
-let bookMouseStartY = 0;
-let bookIsSwiping = false;
-
-function isAnyModalOrSidebarOpen() {
-    const activeModal = document.querySelector(
-        '.modal.active, .modal.show, .modal[style*="display: block"]'
-    );
-
-    const activeSidebar = document.querySelector(
-        '.sidebar.active, .sidebar.open, .drawer.open'
-    );
-
-    const activeCard = document.querySelector(
-        '.debt-card.expanded, .card.open'
-    );
-
-    return (
-        activeModal !== null ||
-        activeSidebar !== null ||
-        activeCard !== null
-    );
-}
-
-window.addEventListener(
-    'touchstart',
-    (e) => {
-        if (isAnyModalOrSidebarOpen()) return;
-
-        if (e.touches && e.touches.length === 1) {
-            bookSwipeStartX = e.touches[0].clientX;
-            bookSwipeStartY = e.touches[0].clientY;
-            bookIsSwiping = true;
-            document.body.style.transition = 'none';
-        }
-    },
-    { passive: true }
-);
-
-window.addEventListener(
-    'touchmove',
-    (e) => {
-        if (!bookIsSwiping) return;
-        if (!e.touches || e.touches.length === 0) return;
-
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
-
-        const diffX = bookSwipeStartX - currentX;
-        const diffY = Math.abs(bookSwipeStartY - currentY);
-
-        if (diffY > 80) {
-            bookIsSwiping = false;
-            document.body.style.transform = 'translateX(0)';
-            return;
-        }
-
-        document.body.style.transform = `translateX(${-diffX * 0.5}px)`;
-    },
-    { passive: true }
-);
-
-window.addEventListener(
-    'touchend',
-    (e) => {
-        if (isAnyModalOrSidebarOpen()) return;
-        if (!bookIsSwiping) return;
-
-        if (!e.changedTouches || e.changedTouches.length === 0) {
-            bookIsSwiping = false;
-            return;
-        }
-
-        const swipeEndX = e.changedTouches[0].clientX;
-        const diffX = bookSwipeStartX - swipeEndX;
-
-        const threshold = 90;
-
-        if (Math.abs(diffX) > threshold) {
-            triggerBookPageTurn(diffX > 0 ? 'next' : 'prev');
-        } else {
-            document.body.style.transition = 'transform 0.2s ease';
-            document.body.style.transform = 'translateX(0)';
-        }
-
-        bookIsSwiping = false;
-    },
-    { passive: true }
-);
-
-window.addEventListener(
-    'mousedown',
-    (e) => {
-        if (isAnyModalOrSidebarOpen()) return;
-        if (e.target.closest('button') || e.target.closest('input')) return;
-
-        bookMouseIsDown = true;
-        bookMouseStartX = e.clientX;
-        bookMouseStartY = e.clientY;
-        bookIsSwiping = true;
-        document.body.style.transition = 'none';
-    }
-);
-
-window.addEventListener(
-    'mousemove',
-    (e) => {
-        if (!bookMouseIsDown || !bookIsSwiping) return;
-
-        const diffX = bookMouseStartX - e.clientX;
-        const diffY = Math.abs(bookMouseStartY - e.clientY);
-
-        if (diffY > 80) {
-            bookIsSwiping = false;
-            document.body.style.transform = 'translateX(0)';
-            return;
-        }
-
-        document.body.style.transform = `translateX(${-diffX * 0.5}px)`;
-    }
-);
-
-window.addEventListener(
-    'mouseup',
-    (e) => {
-        if (!bookMouseIsDown) return;
-        if (isAnyModalOrSidebarOpen()) {
-            bookMouseIsDown = false;
-            return;
-        }
-
-        const diffX = bookMouseStartX - e.clientX;
-        const threshold = 90;
-
-        if (Math.abs(diffX) > threshold) {
-            triggerBookPageTurn(diffX > 0 ? 'next' : 'prev');
-        } else {
-            document.body.style.transition = 'transform 0.2s ease';
-            document.body.style.transform = 'translateX(0)';
-        }
-
-        bookMouseIsDown = false;
-        bookIsSwiping = false;
-    }
-);
-
-function triggerBookPageTurn(direction) {
-    if (isAnyModalOrSidebarOpen()) return;
-
-    document.body.style.transition = 'transform 0.25s ease-out';
-    
-    if (direction === 'next') {
-        document.body.style.transform = 'translateX(-100vw)';
-    } else {
-        document.body.style.transform = 'translateX(100vw)';
-    }
-
-    setTimeout(() => {
-        window.location.href = 'painel-resumo.html';
-    }, 250);
-}
 
 
 /////////////////////////////////////
