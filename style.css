@@ -15,6 +15,16 @@ a {
     -webkit-tap-highlight-color: transparent;
     outline: none;
 }
+/* Impede a expansão e redimensionamento indesejado de inputs, textareas e selects */
+input, textarea, select {
+    resize: none !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+textarea {
+    resize: none !important;
+}
 
 html {
   font-size: 16px;
@@ -701,39 +711,6 @@ header,
     opacity: 0.9;
 }
 
-.history-list, .updates-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.history-item, .update-item {
-    padding: clamp(12px, 1.8vw, 16px);
-    border-radius: 10px;
-    background-color: var(--bg-main);
-    border: 1px solid var(--border-color);
-}
-
-.update-version {
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.update-date {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-weight: normal;
-}
-
-.update-desc {
-    font-size: 0.95rem;
-    color: var(--text-main);
-    line-height: 1.4;
-}
-
 .toast-message {
     position: fixed;
     left: 50%;
@@ -744,11 +721,10 @@ header,
     gap: 10px;
     max-width: calc(100vw - 32px);
     padding: 14px 20px;
-    background-color: var(--header-bg);
-    color: var(--text-white);
+    background-color: var(--fundo-toast-message);
+    color: var(--color-toast-message);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px var(--toast-shadow);
+    border-radius: 5px;
     font-size: clamp(0.85rem, 1vw, 0.95rem);
     font-weight: 600;
     line-height: 1.3;
@@ -913,6 +889,76 @@ html, body {
     margin-top: 2px;
     color: #FFFFFF;
 }
+
+/*////////////////////////////////////
+//
+// - animação do ícone hourglass dividas 
+//
+///////////////////////////////////*/
+@keyframes spin-and-pause {
+    0% {
+        transform: rotate(0deg);
+    }
+    /* Gira 360 graus até 50% do tempo (1s) */
+    50% {
+        transform: rotate(360deg);
+    }
+    /* Mantém a rotação em 360 graus até 100% do tempo (faz a pausa) */
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinning-icon {
+    /* Tempo total do ciclo: 1s girando + 1s parado = 2s */
+    animation: spin-and-pause 2s ease-in-out infinite;
+    display: inline-block;
+}
+
+/*////////////////////////////////////
+//
+// - botão de clean de valores 
+//
+///////////////////////////////////*/
+/* Container do Input */
+.input-with-clear {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-with-clear input {
+    width: 100%;
+    padding-right: 40px; /* Garante espaço para o botão X */
+}
+
+/* Botão X de Limpeza Rápida (Sem Efeito Hover) */
+.btn-clear-value {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* Remove o quadrado cinza de toque no mobile */
+}
+
+/* Feedback tátil rápido apenas ao pressionar/clicar */
+.btn-clear-value:active {
+    transform: scale(0.85);
+    opacity: 0.7;
+}
+
+
 
 /*////////////////////////////////////
 //

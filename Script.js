@@ -6,7 +6,6 @@
 
 let exportFileHandle = null;
 
-// Declarações Globais para acesso compartilhado entre as partes
 const devContactInfo =
     "Teddy Machado\n" +
     "Desenvolvedor e Criador do DívidaZero\n" +
@@ -38,29 +37,32 @@ function showToast(message, type = "success") {
     }, 2500);
 }
 
+//////////////////////////////////////
+// - GERENCIADOR GLOBAL DE SCROLL DO BODY
+//////////////////////////////////////
+function updateBodyScrollState() {
+    const activeModals = document.querySelectorAll('.custom-modal-overlay.active, .modal.active, .clear-logs-overlay');
+    const activeSidebar = document.querySelector('#sidebar.active');
+    
+    // Se houver qualquer modal ou a sidebar aberta, trava o scroll do body
+    if (activeModals.length > 0 || activeSidebar) {
+        document.body.classList.add('no-scroll');
+    } else {
+        document.body.classList.remove('no-scroll');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    //////////////////////////////////////
-    //
-    // - ESTADO GLOBAL
-    //
-    //////////////////////////////////////
     const now = new Date();
     const state = {
         debts: JSON.parse(localStorage.getItem('dz_debts')) || [],
         logs: JSON.parse(localStorage.getItem('dz_logs')) || [],
-        // Inicializa com o mês e ano do momento em que o script é executado
         currentDate: new Date(now.getFullYear(), now.getMonth(), 1),
         filterQuery: '',
         sortOption: 'recent',
         theme: localStorage.getItem('dz_theme') || getSystemTheme()
     };
-
-    //////////////////////////////////////
-    //
-    // - APRIMORAMENTO: SISTEMA DE VIRADA AUTOMÁTICA DE MÊS
-    //
-    //////////////////////////////////////
 
     function getSystemTheme() {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -77,11 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    //////////////////////////////////////
-    //
-    // -0001ABC MAPEAMENTO DO DOM
-    //
-    //////////////////////////////////////
     const dom = {
         appContainer: document.getElementById('app-container'),
         debtsContainer: document.getElementById('debts-container'),
@@ -130,6 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
         charCounter: document.getElementById('char-counter'),
         charWarning: document.getElementById('char-warning'),
 
+        radioQuickCurrent: document.getElementById('quick-month-current'),
+        radioQuickNext: document.getElementById('quick-month-next'),
+
         modalEditExpense: document.getElementById('modal-edit-expense'),
         btnCloseModalEdit: document.getElementById('btn-close-modal-edit'),
         formEditExpense: document.getElementById('form-edit-expense'),
@@ -159,11 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCopyDevContact: document.getElementById('btn-copy-dev-contact')
     };
 
-    //////////////////////////////////////
-    //
-    // - FUNÇÕES UTILITÁRIAS E LOGS
-    //
-    //////////////////////////////////////
     function generateRandomID() {
         const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const numbers = "0123456789";
@@ -197,14 +192,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatCurrency(val) {
+        if (val < 1e6) {
+            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        const suffixes = [
+            { value: 1e15, singular: 'quatrilhão', plural: 'quatrilhões' },
+            { value: 1e12, singular: 'trilhão', plural: 'trilhões' },
+            { value: 1e9,  singular: 'bilhão',  plural: 'bilhões' },
+            { value: 1e6,  singular: 'milhão',  plural: 'milhões' }
+        ];
+
+        for (const scale of suffixes) {
+            if (val >= scale.value) {
+                const num = val / scale.value;
+                const formatted = num % 1 === 0 
+                    ? num.toFixed(0) 
+                    : num.toFixed(2).replace(/\.?0+$/, '').replace('.', ',');
+
+                const suffix = num >= 2 ? scale.plural : scale.singular;
+                return `${formatted} ${suffix}`;
+            }
+        }
+
         return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    //////////////////////////////////
-    //
-    // - MÊS DO ANO E DIA ATUAL DO DISPOSITIVO
-    //
-    /////////////////////////////////////
     function updateMonthDisplay() {
         const monthNames = [
             "janeiro", "fevereiro", "março", "abril", "maio", "junho",
@@ -225,14 +238,10 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.currentMonthDisplay.innerHTML = `
             <ion-icon name="calendar-number-outline"></ion-icon>
             <span>${month} ${monthNumber} / ${year}</span>
-       <small class="real-today">Hoje: ${realTodayFormatted}</small>
+            <small class="real-today">Hoje: ${realTodayFormatted}</small>
         `;
     }
-    //////////////////////////////////////
-    //
-    // -513TT barra de pesquisa: RENDERIZAÇÃO E FILTRAGEM (TEXTO, ID, EMPRESA E VALORES)
-    //
-    //////////////////////////////////////
+
     function renderDebts() {
         updateMonthDisplay();
         dom.debtsContainer.innerHTML = '';
@@ -242,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let mappedDebts = state.debts.map((d, index) => ({ ...d, originalIndex: index }));
 
-        // -513TT barra de pesquisa: Aplicação do filtro conectado com o input de busca
         let filteredDebts = mappedDebts.filter(debt => {
             const debtDate = new Date(debt.date + 'T00:00:00');
             const matchesDate = debtDate.getMonth() === currentMonth && debtDate.getFullYear() === currentYear;
@@ -250,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const query = state.filterQuery.toLowerCase().trim();
             const company = (debt.company || 'Outros').toLowerCase();
             
-            // Tratamento otimizado para buscar valores por número ou texto formatado
             const debtValueStr = debt.value.toString();
             const debtValueFormatted = debt.value.toFixed(2).replace('.', ',');
             const cleanQuery = query.replace('r$', '').replace(/\s+/g, '').replace('.', ',');
@@ -309,14 +316,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="debt-info">
                         <div class="debt-header-info">
                             <span class="debt-tag-id">ID: ${debt.id}</span>
-                <span class="debt-company-badge">
-    <ion-icon name="${
-        companyName.toLowerCase() === 'outros'
-            ? 'ellipsis-horizontal-circle-outline'
-            : 'business-outline'
-    }"></ion-icon>
-    ${companyName}
-</span>
+                            <span class="debt-company-badge">
+                                <ion-icon name="${
+                                    companyName.toLowerCase() === 'outros'
+                                        ? 'ellipsis-horizontal-circle-outline'
+                                        : 'business-outline'
+                                }"></ion-icon>
+                                ${companyName}
+                            </span>
                         </div>
                         <span class="debt-title">${debt.description}</span>
                         <div class="debt-date">
@@ -326,8 +333,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="debt-values">
                         <span class="debt-amount">${formatCurrency(debt.value)}</span>
                         <span class="status-badge ${debt.paid ? 'status-paid' : 'status-pending'}" data-id="${debt.id}">
-                            <ion-icon name="${debt.paid ? 'checkmark-circle-outline' : 'time-outline'}"></ion-icon>
-                            ${debt.paid ? 'Pago' : 'Pendente'}
+                            <ion-icon 
+                                name="${debt.paid ? 'shield-checkmark-outline' : 'hourglass-outline'}"
+                                class="${debt.paid ? '' : 'spinning-icon'}">
+                            </ion-icon>
+                            ${debt.paid ? 'Quitado' : 'Em aberto'}
                         </span>
                     </div>
                 `;
@@ -358,15 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 //////////////////////////////////////
 //
-// - PARTE 2: MODAIS, EVENTOS E BACKUP/IMPORT
+// - PARTE 2: MODAIS, EVENTOS E SELEÇÃO DE MÊS
 //
 //////////////////////////////////////
 
-    //////////////////////////////////////
-    //
-    // - MANIPULAÇÃO DE MODAIS E INTERFACE
-    //
-    //////////////////////////////////////
     function updateCharCounterForInput(inputEl, counterEl, warningEl) {
         if (!inputEl || !counterEl) return;
         const currentLength = inputEl.value.length;
@@ -404,13 +409,102 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dom.expenseCustomCompany) dom.expenseCustomCompany.value = '';
         if (dom.customCompanyGroup) dom.customCompanyGroup.style.display = 'none';
 
+        const mainExpenseText = document.getElementById('expense-value-text');
+        if (mainExpenseText) mainExpenseText.textContent = '';
+
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
         if (dom.expenseDate) dom.expenseDate.value = `${yyyy}-${mm}-${dd}`;
 
+        if (dom.radioQuickCurrent) dom.radioQuickCurrent.checked = true;
+
         updateCharCounterForInput(dom.expenseDescription, dom.charCounter, dom.charWarning);
+    }
+
+    function openDaySelectorModal(targetYear, targetMonth, currentDay, onConfirm) {
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-modal-overlay active';
+
+        const lastDayOfMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const defaultDay = Math.min(currentDay, lastDayOfMonth);
+
+        overlay.innerHTML = `
+            <div class="custom-modal-box">
+                <div class="custom-modal-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+                <h3 class="custom-modal-title">Escolha o Dia de Vencimento</h3>
+                <p class="custom-modal-message">
+                    Informe o dia do próximo mês para o vencimento desta conta:
+                </p>
+                <div style="margin: 15px 0;">
+                    <input 
+                        type="number" 
+                        id="quick-day-input" 
+                        class="form-control" 
+                        min="1" 
+                        max="${lastDayOfMonth}" 
+                        value="${defaultDay}" 
+                        style="text-align: center; font-size: 1.2rem; width: 100px; margin: 0 auto;"
+                    >
+                </div>
+                <div class="custom-modal-actions">
+                    <button id="btn-day-cancel" class="btn-modal-secondary">Cancelar</button>
+                    <button id="btn-day-confirm" class="btn-modal-danger" style="background-color: var(--primary-color, #2563eb);">Confirmar</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        updateBodyScrollState(); // Trava Scroll
+
+        const dayInput = overlay.querySelector('#quick-day-input');
+        dayInput.focus();
+
+        overlay.querySelector('#btn-day-confirm').addEventListener('click', () => {
+            let dayVal = parseInt(dayInput.value) || defaultDay;
+            dayVal = Math.max(1, Math.min(dayVal, lastDayOfMonth));
+            onConfirm(dayVal);
+            overlay.remove();
+            updateBodyScrollState(); // Libera Scroll
+        });
+
+        overlay.querySelector('#btn-day-cancel').addEventListener('click', () => {
+            if (dom.radioQuickCurrent) dom.radioQuickCurrent.checked = true;
+            overlay.remove();
+            updateBodyScrollState(); // Libera Scroll
+        });
+    }
+
+    if (dom.radioQuickCurrent && dom.radioQuickNext) {
+        dom.radioQuickCurrent.addEventListener('change', () => {
+            if (dom.radioQuickCurrent.checked) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dom.expenseDate.value = `${yyyy}-${mm}-${dd}`;
+            }
+        });
+
+        dom.radioQuickNext.addEventListener('change', () => {
+            if (dom.radioQuickNext.checked) {
+                const today = new Date();
+                let nextMonth = today.getMonth() + 1;
+                let nextYear = today.getFullYear();
+
+                if (nextMonth > 11) {
+                    nextMonth = 0;
+                    nextYear++;
+                }
+
+                openDaySelectorModal(nextYear, nextMonth, today.getDate(), (selectedDay) => {
+                    const formattedMonth = String(nextMonth + 1).padStart(2, '0');
+                    const formattedDay = String(selectedDay).padStart(2, '0');
+                    dom.expenseDate.value = `${nextYear}-${formattedMonth}-${formattedDay}`;
+                });
+            }
+        });
     }
 
     function openEditModal(debt) {
@@ -428,7 +522,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         dom.editExpenseDescription.value = debt.description;
-        dom.editExpenseValue.value = debt.value;
+        
+        if (dom.editExpenseValue) {
+            const initialCents = Math.round((debt.value || 0) * 100);
+            const formattedVal = (initialCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            dom.editExpenseValue.value = formattedVal;
+            
+            const editExpenseText = document.getElementById('edit-expense-value-text');
+            if (editExpenseText) {
+                editExpenseText.textContent = getCurrencyExtenso(debt.value || 0);
+            }
+        }
+        
         dom.editExpenseDate.value = debt.date;
 
         if (debt.paid) {
@@ -452,11 +557,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openModal(modal) {
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            modal.classList.add('active');
+            updateBodyScrollState();
+        }
     }
 
     function closeModal(modal) {
-        if (modal) modal.classList.remove('active');
+        if (modal) {
+            modal.classList.remove('active');
+            updateBodyScrollState();
+        }
     }
 
     function toggleSidebar(open) {
@@ -467,6 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dom.sidebar.classList.remove('active');
             dom.sidebarOverlay.classList.remove('active');
         }
+        updateBodyScrollState();
     }
 
     function toggleSortDropdown(open) {
@@ -514,11 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    //////////////////////////////////////
-    //
-    // - LISTENERS DE FORMULÁRIOS E BOTÕES
-    //
-    //////////////////////////////////////
     dom.sortOptions.forEach(option => {
         option.addEventListener('click', () => {
             dom.sortOptions.forEach(opt => opt.classList.remove('selected'));
@@ -627,74 +734,72 @@ document.addEventListener('DOMContentLoaded', () => {
     
     dom.btnCloseModalEdit.addEventListener('click', () => closeModal(dom.modalEditExpense));
 
-   //-002HL : CONFIRMAÇÃO LIMPAR HISTÓRICO
+    dom.btnClearLogs.addEventListener('click', () => {
+        if (state.logs.length === 0) return;
 
-dom.btnClearLogs.addEventListener('click', () => {
-    if (state.logs.length === 0) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'clear-logs-overlay';
 
-    const overlay = document.createElement('div');
-    overlay.className = 'clear-logs-overlay';
+        const modal = document.createElement('div');
+        modal.className = 'clear-logs-modal';
 
-    const modal = document.createElement('div');
-    modal.className = 'clear-logs-modal';
+        const icon = document.createElement('div');
+        icon.className = 'clear-logs-icon';
+        icon.innerHTML = `<ion-icon name="trash-outline"></ion-icon>`;
 
-    const icon = document.createElement('div');
-    icon.className = 'clear-logs-icon';
-    icon.innerHTML = `
-        <ion-icon name="trash-outline"></ion-icon>
-    `;
+        const title = document.createElement('h3');
+        title.className = 'clear-logs-title';
+        title.textContent = 'Deseja limpar todo o histórico de ações?';
 
-    const title = document.createElement('h3');
-    title.className = 'clear-logs-title';
-    title.textContent = 'Deseja limpar todo o histórico de ações?';
+        const text = document.createElement('p');
+        text.className = 'clear-logs-text';
+        text.textContent = 'Essa ação não pode ser desfeita e apagará permanentemente todo o histórico.';
 
-    const text = document.createElement('p');
-    text.className = 'clear-logs-text';
-    text.textContent =
-        'Essa ação não pode ser desfeita e apagará permanentemente todo o histórico.';
+        const buttons = document.createElement('div');
+        buttons.className = 'clear-logs-buttons';
 
-    const buttons = document.createElement('div');
-    buttons.className = 'clear-logs-buttons';
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'clear-logs-cancel';
+        cancelButton.type = 'button';
+        cancelButton.textContent = 'Cancelar';
 
-    const cancelButton = document.createElement('button');
-    cancelButton.className = 'clear-logs-cancel';
-    cancelButton.type = 'button';
-    cancelButton.textContent = 'Cancelar';
+        const confirmButton = document.createElement('button');
+        confirmButton.className = 'clear-logs-confirm';
+        confirmButton.type = 'button';
+        confirmButton.textContent = 'OK';
 
-    const confirmButton = document.createElement('button');
-    confirmButton.className = 'clear-logs-confirm';
-    confirmButton.type = 'button';
-    confirmButton.textContent = 'OK';
+        buttons.appendChild(cancelButton);
+        buttons.appendChild(confirmButton);
 
-    buttons.appendChild(cancelButton);
-    buttons.appendChild(confirmButton);
+        modal.appendChild(icon);
+        modal.appendChild(title);
+        modal.appendChild(text);
+        modal.appendChild(buttons);
 
-    modal.appendChild(icon);
-    modal.appendChild(title);
-    modal.appendChild(text);
-    modal.appendChild(buttons);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        updateBodyScrollState(); // Trava scroll
 
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    cancelButton.addEventListener('click', () => {
-        overlay.remove();
-    });
-
-    confirmButton.addEventListener('click', () => {
-        state.logs = [];
-        saveData();
-        renderHistory();
-
-        overlay.remove();
-    });
-
-    overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
+        cancelButton.addEventListener('click', () => {
             overlay.remove();
-        }
+            updateBodyScrollState();
+        });
+
+        confirmButton.addEventListener('click', () => {
+            state.logs = [];
+            saveData();
+            renderHistory();
+            overlay.remove();
+            updateBodyScrollState();
+        });
+
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                overlay.remove();
+                updateBodyScrollState();
+            }
+        });
     });
-});;
 
     dom.menuItemDeveloper.addEventListener('click', () => {
         toggleSidebar(false);
@@ -746,6 +851,7 @@ dom.btnClearLogs.addEventListener('click', () => {
             `;
 
             document.body.appendChild(modalOverlay);
+            updateBodyScrollState();
 
             modalOverlay.querySelector('#btn-modal-confirm').addEventListener('click', () => {
                 const totalApagado = state.debts.length;
@@ -755,14 +861,19 @@ dom.btnClearLogs.addEventListener('click', () => {
                 renderDebts();
                 showToast("Todas as dívidas foram removidas!");
                 modalOverlay.remove();
+                updateBodyScrollState();
             });
 
             modalOverlay.querySelector('#btn-modal-cancel').addEventListener('click', () => {
                 modalOverlay.remove();
+                updateBodyScrollState();
             });
 
             modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) modalOverlay.remove();
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                    updateBodyScrollState();
+                }
             });
         });
     }
@@ -786,9 +897,6 @@ dom.btnClearLogs.addEventListener('click', () => {
         renderDebts();
     });
 
-    //////////////////////////////////////
-    // -513TT barra de pesquisa: Listener do input que ativa o sistema de busca em tempo real
-    //////////////////////////////////////
     dom.searchInput.addEventListener('input', (e) => {
         state.filterQuery = e.target.value;
         renderDebts();
@@ -808,10 +916,11 @@ dom.btnClearLogs.addEventListener('click', () => {
         }
 
         const desc = dom.expenseDescription.value.trim();
-        const val = parseFloat(dom.expenseValue.value);
+        const rawValue = dom.expenseValue.value.replace(/\D/g, '');
+        const val = rawValue ? parseFloat(rawValue) / 100 : 0;
         const date = dom.expenseDate.value;
 
-        if (!desc || isNaN(val) || !date) return;
+        if (!desc || val <= 0 || !date) return;
 
         const newDebt = {
             id: generateRandomID(),
@@ -847,9 +956,12 @@ dom.btnClearLogs.addEventListener('click', () => {
                 company = dom.editExpenseCustomCompany.value.trim() || 'Outros';
             }
 
+            const rawEditValue = dom.editExpenseValue.value.replace(/\D/g, '');
+            const parsedVal = rawEditValue ? parseFloat(rawEditValue) / 100 : 0;
+
             debt.company = company;
             debt.description = dom.editExpenseDescription.value.trim();
-            debt.value = parseFloat(dom.editExpenseValue.value);
+            debt.value = parsedVal;
             debt.date = dom.editExpenseDate.value;
             debt.paid = dom.editPaidTrue.checked;
 
@@ -911,11 +1023,6 @@ dom.btnClearLogs.addEventListener('click', () => {
         }
     });
 
-    //////////////////////////////////////
-    //
-    // - SISTEMA DE EXPORTAÇÃO E IMPORTAÇÃO DE BACKUP
-    //
-    //////////////////////////////////////
     dom.menuItemExport.addEventListener('click', async () => {
         toggleSidebar(false);
         const dataString = JSON.stringify(state, null, 2);
@@ -1010,9 +1117,212 @@ dom.btnClearLogs.addEventListener('click', () => {
     applyTheme(state.theme);
     renderDebts();
 });
+/////////////////////////////////////
+//
+// - PARTE 3: MÁSCARA MONETÁRIA COM LIMITE DE QUINTILHÕES E EXIBIÇÃO POR EXTENSO
+//
+////////////////////////////////////
+
+/**
+ * Converte um valor numérico para uma exibição textual amigável (por extenso/simplificada).
+ * @param {number} val 
+ * @returns {string}
+ */
+function getCurrencyExtenso(val) {
+    if (val <= 0) return '';
+    if (val < 1e6) {
+        return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    const suffixes = [
+        { value: 1e15, singular: 'quatrilhão', plural: 'quatrilhões' },
+        { value: 1e12, singular: 'trilhão', plural: 'trilhões' },
+        { value: 1e9,  singular: 'bilhão',  plural: 'bilhões' },
+        { value: 1e6,  singular: 'milhão',  plural: 'milhões' }
+    ];
+
+    for (const scale of suffixes) {
+        if (val >= scale.value) {
+            const num = val / scale.value;
+            const formatted = num % 1 === 0 
+                ? num.toFixed(0) 
+                : num.toFixed(2).replace(/\.?0+$/, '').replace('.', ',');
+
+            const suffix = num >= 2 ? scale.plural : scale.singular;
+            return `${formatted} ${suffix}`;
+        }
+    }
+
+    return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+/**
+ * Aplica a máscara monetária, impede valores >= 1 Quintilhão (1e18) e exibe o texto explicativo.
+ * 
+ * @param {HTMLInputElement} inputEl
+ * @param {HTMLElement} displayEl
+ */
+function applyCurrencyMask(inputEl, displayEl = null) {
+    if (!inputEl) return;
+
+    // Limite máximo permitido: 999 Trilhões (Impede atingir 1 Quintilhão / 1e18)
+    const MAX_VALUE = 999999999999999.99; 
+
+    function updateDisplayText(val) {
+        if (displayEl) {
+            displayEl.textContent = val > 0 ? getCurrencyExtenso(val) : '';
+        }
+    }
+
+    // Inicializa a formatação ao focar caso esteja vazio
+    inputEl.addEventListener('focus', (e) => {
+        if (!e.target.value) {
+            e.target.value = (0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+            updateDisplayText(0);
+        }
+    });
+
+    // Formata o valor digitado da direita para a esquerda e valida o limite
+    inputEl.addEventListener('input', (e) => {
+        let digitsOnly = e.target.value.replace(/\D/g, '');
+
+        if (!digitsOnly) {
+            e.target.value = '';
+            updateDisplayText(0);
+            return;
+        }
+
+        let centsValue = parseFloat(digitsOnly) / 100;
+
+        // Bloqueia valores iguais ou superiores a quintilhões
+        if (centsValue > MAX_VALUE) {
+      
+            // Corta o último dígito inserido
+            digitsOnly = digitsOnly.slice(0, -1);
+            centsValue = parseFloat(digitsOnly) / 100;
+        }
+
+        e.target.value = centsValue.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        updateDisplayText(centsValue);
+    });
+
+    // Limpa o valor se o usuário sair do campo sem digitar nenhum número válido
+    inputEl.addEventListener('blur', (e) => {
+        const digitsOnly = e.target.value.replace(/\D/g, '');
+        if (!digitsOnly || parseFloat(digitsOnly) === 0) {
+            e.target.value = '';
+            updateDisplayText(0);
+        }
+    });
+}
+
+// Inicialização nos inputs e conexões com as tags de texto
+const mainExpenseInput = document.getElementById('expense-value');
+const mainExpenseText = document.getElementById('expense-value-text');
+
+const editExpenseInput = document.getElementById('edit-expense-value');
+const editExpenseText = document.getElementById('edit-expense-value-text');
+
+applyCurrencyMask(mainExpenseInput, mainExpenseText);
+applyCurrencyMask(editExpenseInput, editExpenseText);
 
 //////////////////////////////////////
 //
 // - FIM DO JS
 //
 /////////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+    // Para o modal de Nova Despesa
+    const btnClearValue = document.getElementById("btn-clear-value");
+    const expenseValueInput = document.getElementById("expense-value");
+    const expenseValueText = document.getElementById("expense-value-text");
+
+    if (btnClearValue && expenseValueInput) {
+        btnClearValue.addEventListener("click", () => {
+            expenseValueInput.value = "";
+            if (expenseValueText) expenseValueText.textContent = "";
+            expenseValueInput.focus();
+        });
+    }
+
+    // Para o modal de Editar Dívida
+    const btnClearEditValue = document.getElementById("btn-clear-edit-value");
+    const editExpenseValueInput = document.getElementById("edit-expense-value");
+    const editExpenseValueText = document.getElementById("edit-expense-value-text");
+
+    if (btnClearEditValue && editExpenseValueInput) {
+        btnClearEditValue.addEventListener("click", () => {
+            editExpenseValueInput.value = "";
+            if (editExpenseValueText) editExpenseValueText.textContent = "";
+            editExpenseValueInput.focus();
+        });
+    }
+});
+document.addEventListener("DOMContentLoaded", () => {
+    // Função para limpar o campo com animação
+    const setupClearInput = (btnId, inputId) => {
+        const btn = document.getElementById(btnId);
+        const input = document.getElementById(inputId);
+
+        if (btn && input) {
+            btn.addEventListener("click", () => {
+                input.value = "";
+                input.focus();
+                
+                // Dispara o evento de input para atualizar o cálculo ou JS dependente
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+            });
+        }
+    };
+
+    setupClearInput("btn-clear-value", "expense-value");
+    setupClearInput("btn-clear-edit-value", "edit-expense-value");
+
+    // Efeito visual de animação ao alterar valores calculados no footer ou resumos
+    const triggerValueAnimation = (element) => {
+        if (!element) return;
+        element.classList.remove("value-pulse");
+        void element.offsetWidth; // Força o reflow para reiniciar a animação CSS
+        element.classList.add("value-pulse");
+    };
+
+    // Exemplo de integração com observador de mudanças nos valores dos resumos:
+    const valueElements = document.querySelectorAll(".animate-value");
+    valueElements.forEach((el) => {
+        const observer = new MutationObserver(() => triggerValueAnimation(el));
+        observer.observe(el, { childList: true, characterData: true, subtree: true });
+    });
+});
+
+
+/*////////////////////////////////////
+//
+// -  FIM DO JS
+//
+///////////////////////////////////*/
+
+const searchInput = document.getElementById('search-input');
+const clearBtn = document.getElementById('clear-search');
+
+// Monitora quando o usuário digita
+searchInput.addEventListener('input', () => {
+    if (searchInput.value.trim() !== '') {
+        clearBtn.style.display = 'block'; // Mostra o 'X'
+    } else {
+        clearBtn.style.display = 'none';  // Esconde o 'X' se estiver vazio
+    }
+});
+
+// Ação ao clicar no 'X'
+clearBtn.addEventListener('click', () => {
+    searchInput.value = '';             // Limpa o texto
+    clearBtn.style.display = 'none';    // Esconde o botão novamente
+    searchInput.focus();             
+});
