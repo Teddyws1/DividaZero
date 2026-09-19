@@ -1023,6 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // SISTEMA DE ATUALIZAÇÃO DIRETA DO ARQUIVO (Sem duplicar como DividaZero_Dados (1).json)
     dom.menuItemExport.addEventListener('click', async () => {
         toggleSidebar(false);
         const dataString = JSON.stringify(state, null, 2);
@@ -1117,11 +1118,11 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(state.theme);
     renderDebts();
 });
-/////////////////////////////////////
+////////////////////////////////-----
 //
 // - PARTE 3: MÁSCARA MONETÁRIA COM LIMITE DE QUINTILHÕES E EXIBIÇÃO POR EXTENSO
 //
-////////////////////////////////////
+////////////////////////////////----
 
 /**
  * Converte um valor numérico para uma exibição textual amigável (por extenso/simplificada).
@@ -1232,7 +1233,6 @@ const editExpenseText = document.getElementById('edit-expense-value-text');
 
 applyCurrencyMask(mainExpenseInput, mainExpenseText);
 applyCurrencyMask(editExpenseInput, editExpenseText);
-
 //////////////////////////////////////
 //
 // - FIM DO JS
