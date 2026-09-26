@@ -1,7 +1,19 @@
 const systemUpdates = [
+    {
+    version: "2.2.0",
+    status: "versão atual",
+    date: "26/09/2026",
+    description: [
+    "Aprimoramentos no salvamento de dados.",
+"Novo sistema de gerenciamento de horários.",
+"Ajustes internos e melhorias de desempenho."
+    ],
+    url: "https://teddyws1.github.io/DividaZero/"
+}
+,
 {
     version: "2.1.0",
-    status: "versão atual",
+    status: "Estável",
     date: "18/09/2026",
     description: [
    "Aprimoramento do sistema de salvamento e atualização das dívidas.",

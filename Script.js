@@ -4,6 +4,8 @@
 //
 //////////////////////////////////////
 
+// Armazena a referência da pasta e do arquivo selecionados pelo utilizador
+let exportDirectoryHandle = null;
 let exportFileHandle = null;
 
 const devContactInfo =
@@ -44,7 +46,6 @@ function updateBodyScrollState() {
     const activeModals = document.querySelectorAll('.custom-modal-overlay.active, .modal.active, .clear-logs-overlay');
     const activeSidebar = document.querySelector('#sidebar.active');
     
-    // Se houver qualquer modal ou a sidebar aberta, trava o scroll do body
     if (activeModals.length > 0 || activeSidebar) {
         document.body.classList.add('no-scroll');
     } else {
@@ -309,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dateObj = new Date(debt.date + 'T00:00:00');
                 const formattedDate = dateObj.toLocaleDateString('pt-BR');
                 const companyName = debt.company || 'Outros';
+                const formattedTime = debt.createdAt || '--:--';
 
                 const card = document.createElement('div');
                 card.className = 'debt-card';
@@ -326,8 +328,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             </span>
                         </div>
                         <span class="debt-title">${debt.description}</span>
-                        <div class="debt-date">
-                            <ion-icon name="calendar-outline"></ion-icon> ${formattedDate}
+                        <div class="debt-date-time">
+                            <span class="debt-date">
+                                <ion-icon name="calendar-outline"></ion-icon> ${formattedDate}
+                            </span>
+                            <span class="debt-time">
+                                <ion-icon name="time-outline"></ion-icon> ${formattedTime}
+                            </span>
                         </div>
                     </div>
                     <div class="debt-values">
@@ -368,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 //////////////////////////////////////
 //
-// - PARTE 2: MODAIS, EVENTOS E SELEÇÃO DE MÊS
+// - PARTE 2: MODAIS, EVENTOS E SELEÇÃO DE PASTA INTELIGENTE
 //
 //////////////////////////////////////
 
@@ -456,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         document.body.appendChild(overlay);
-        updateBodyScrollState(); // Trava Scroll
+        updateBodyScrollState();
 
         const dayInput = overlay.querySelector('#quick-day-input');
         dayInput.focus();
@@ -466,13 +473,13 @@ document.addEventListener('DOMContentLoaded', () => {
             dayVal = Math.max(1, Math.min(dayVal, lastDayOfMonth));
             onConfirm(dayVal);
             overlay.remove();
-            updateBodyScrollState(); // Libera Scroll
+            updateBodyScrollState();
         });
 
         overlay.querySelector('#btn-day-cancel').addEventListener('click', () => {
             if (dom.radioQuickCurrent) dom.radioQuickCurrent.checked = true;
             overlay.remove();
-            updateBodyScrollState(); // Libera Scroll
+            updateBodyScrollState();
         });
     }
 
@@ -778,7 +785,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
-        updateBodyScrollState(); // Trava scroll
+        updateBodyScrollState();
 
         cancelButton.addEventListener('click', () => {
             overlay.remove();
@@ -922,13 +929,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!desc || val <= 0 || !date) return;
 
+        // Captura o horário exato em que a dívida foi criada (HH:mm)
+        const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
         const newDebt = {
             id: generateRandomID(),
             company: company,
             description: desc,
             value: val,
             date: date,
-            paid: false
+            paid: false,
+            createdAt: currentTime
         };
 
         state.debts.push(newDebt);
@@ -1023,45 +1034,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // SISTEMA DE ATUALIZAÇÃO DIRETA DO ARQUIVO (Sem duplicar como DividaZero_Dados (1).json)
+    // SISTEMA DE SELEÇÃO DE PASTA INTELIGENTE (VERIFICA SE DividaZero_Dados.json JÁ EXISTE)
     dom.menuItemExport.addEventListener('click', async () => {
         toggleSidebar(false);
         const dataString = JSON.stringify(state, null, 2);
 
-        if ('showSaveFilePicker' in window) {
+        // 1. TENTA USAR A API DE DIRETÓRIOS DO NAVEGADOR (FILE SYSTEM ACCESS API)
+        if ('showDirectoryPicker' in window) {
             try {
-                if (!exportFileHandle) {
-                    exportFileHandle = await window.showSaveFilePicker({
-                        suggestedName: 'DividaZero_Dados.json',
-                        types: [{
-                            description: 'Arquivo JSON',
-                            accept: { 'application/json': ['.json'] }
-                        }]
-                    });
+                // Se ainda não escolheu uma pasta nesta sessão, solicita ao utilizador para escolher uma
+                if (!exportDirectoryHandle) {
+                    exportDirectoryHandle = await window.showDirectoryPicker();
                 } else {
+                    // Verifica se a permissão para mexer na pasta continua concedida
                     const options = { mode: 'readwrite' };
-                    if (await exportFileHandle.queryPermission(options) !== 'granted') {
-                        if (await exportFileHandle.requestPermission(options) !== 'granted') {
-                            exportFileHandle = null;
+                    if (await exportDirectoryHandle.queryPermission(options) !== 'granted') {
+                        if (await exportDirectoryHandle.requestPermission(options) !== 'granted') {
+                            exportDirectoryHandle = null;
                             return;
                         }
                     }
                 }
 
+                // Procura na pasta escolhida se já existe o arquivo "DividaZero_Dados.json"
+                // create: false faz com que ele apenas procure sem criar nada por enquanto
+                try {
+                    exportFileHandle = await exportDirectoryHandle.getFileHandle('DividaZero_Dados.json', { create: false });
+                } catch (err) {
+                    // Se não existir, o navegador lança um erro, então criamos o arquivo novo na pasta
+                    exportFileHandle = await exportDirectoryHandle.getFileHandle('DividaZero_Dados.json', { create: true });
+                }
+
+                // Escreve os dados no arquivo encontrado ou recém-criado
                 const writable = await exportFileHandle.createWritable();
                 await writable.write(dataString);
                 await writable.close();
 
-                addLog("Backup atualizado no mesmo arquivo.");
-                showToast("Arquivo atualizado com sucesso!");
+                addLog("Backup atualizado na pasta selecionada.");
+                showToast("Arquivo DividaZero_Dados.json guardado/atualizado!");
                 return;
             } catch (err) {
+                exportDirectoryHandle = null;
                 exportFileHandle = null;
-                if (err.name === 'AbortError') return;
-                console.warn('Fallback ativado:', err);
+                if (err.name === 'AbortError') return; // Utilizador cancelou a caixa de diálogo
+                console.warn('Fallback de diretório ativado:', err);
             }
         }
 
+        // 2. FALLBACK UNIVERSAL (DOWNLOAD VIA BLOB CASO O BROWSER NÃO SUPORTE DIRETÓRIOS)
         const blob = new Blob([dataString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const downloadAnchor = document.createElement('a');
@@ -1073,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', () => {
         URL.revokeObjectURL(url);
 
         addLog("Backup dos dados exportado.");
-        showToast("Dados exportados!");
+        showToast("Backup gerado via download!");
     });
 
     dom.menuItemImport.addEventListener('click', () => {
@@ -1120,15 +1140,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 ////////////////////////////////-----
 //
-// - PARTE 3: MÁSCARA MONETÁRIA COM LIMITE DE QUINTILHÕES E EXIBIÇÃO POR EXTENSO
+// - PARTE 3: MÁSCARA MONETÁRIA E UTILITÁRIOS FINAIS
 //
 ////////////////////////////////----
 
-/**
- * Converte um valor numérico para uma exibição textual amigável (por extenso/simplificada).
- * @param {number} val 
- * @returns {string}
- */
 function getCurrencyExtenso(val) {
     if (val <= 0) return '';
     if (val < 1e6) {
@@ -1157,16 +1172,9 @@ function getCurrencyExtenso(val) {
     return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-/**
- * Aplica a máscara monetária, impede valores >= 1 Quintilhão (1e18) e exibe o texto explicativo.
- * 
- * @param {HTMLInputElement} inputEl
- * @param {HTMLElement} displayEl
- */
 function applyCurrencyMask(inputEl, displayEl = null) {
     if (!inputEl) return;
 
-    // Limite máximo permitido: 999 Trilhões (Impede atingir 1 Quintilhão / 1e18)
     const MAX_VALUE = 999999999999999.99; 
 
     function updateDisplayText(val) {
@@ -1175,7 +1183,6 @@ function applyCurrencyMask(inputEl, displayEl = null) {
         }
     }
 
-    // Inicializa a formatação ao focar caso esteja vazio
     inputEl.addEventListener('focus', (e) => {
         if (!e.target.value) {
             e.target.value = (0).toLocaleString('pt-BR', {
@@ -1186,7 +1193,6 @@ function applyCurrencyMask(inputEl, displayEl = null) {
         }
     });
 
-    // Formata o valor digitado da direita para a esquerda e valida o limite
     inputEl.addEventListener('input', (e) => {
         let digitsOnly = e.target.value.replace(/\D/g, '');
 
@@ -1198,10 +1204,7 @@ function applyCurrencyMask(inputEl, displayEl = null) {
 
         let centsValue = parseFloat(digitsOnly) / 100;
 
-        // Bloqueia valores iguais ou superiores a quintilhões
         if (centsValue > MAX_VALUE) {
-      
-            // Corta o último dígito inserido
             digitsOnly = digitsOnly.slice(0, -1);
             centsValue = parseFloat(digitsOnly) / 100;
         }
@@ -1214,7 +1217,6 @@ function applyCurrencyMask(inputEl, displayEl = null) {
         updateDisplayText(centsValue);
     });
 
-    // Limpa o valor se o usuário sair do campo sem digitar nenhum número válido
     inputEl.addEventListener('blur', (e) => {
         const digitsOnly = e.target.value.replace(/\D/g, '');
         if (!digitsOnly || parseFloat(digitsOnly) === 0) {
@@ -1224,7 +1226,6 @@ function applyCurrencyMask(inputEl, displayEl = null) {
     });
 }
 
-// Inicialização nos inputs e conexões com as tags de texto
 const mainExpenseInput = document.getElementById('expense-value');
 const mainExpenseText = document.getElementById('expense-value-text');
 
@@ -1233,40 +1234,8 @@ const editExpenseText = document.getElementById('edit-expense-value-text');
 
 applyCurrencyMask(mainExpenseInput, mainExpenseText);
 applyCurrencyMask(editExpenseInput, editExpenseText);
-//////////////////////////////////////
-//
-// - FIM DO JS
-//
-/////////////////////////////////////
+
 document.addEventListener("DOMContentLoaded", () => {
-    // Para o modal de Nova Despesa
-    const btnClearValue = document.getElementById("btn-clear-value");
-    const expenseValueInput = document.getElementById("expense-value");
-    const expenseValueText = document.getElementById("expense-value-text");
-
-    if (btnClearValue && expenseValueInput) {
-        btnClearValue.addEventListener("click", () => {
-            expenseValueInput.value = "";
-            if (expenseValueText) expenseValueText.textContent = "";
-            expenseValueInput.focus();
-        });
-    }
-
-    // Para o modal de Editar Dívida
-    const btnClearEditValue = document.getElementById("btn-clear-edit-value");
-    const editExpenseValueInput = document.getElementById("edit-expense-value");
-    const editExpenseValueText = document.getElementById("edit-expense-value-text");
-
-    if (btnClearEditValue && editExpenseValueInput) {
-        btnClearEditValue.addEventListener("click", () => {
-            editExpenseValueInput.value = "";
-            if (editExpenseValueText) editExpenseValueText.textContent = "";
-            editExpenseValueInput.focus();
-        });
-    }
-});
-document.addEventListener("DOMContentLoaded", () => {
-    // Função para limpar o campo com animação
     const setupClearInput = (btnId, inputId) => {
         const btn = document.getElementById(btnId);
         const input = document.getElementById(inputId);
@@ -1275,8 +1244,6 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.addEventListener("click", () => {
                 input.value = "";
                 input.focus();
-                
-                // Dispara o evento de input para atualizar o cálculo ou JS dependente
                 input.dispatchEvent(new Event("input", { bubbles: true }));
             });
         }
@@ -1285,15 +1252,13 @@ document.addEventListener("DOMContentLoaded", () => {
     setupClearInput("btn-clear-value", "expense-value");
     setupClearInput("btn-clear-edit-value", "edit-expense-value");
 
-    // Efeito visual de animação ao alterar valores calculados no footer ou resumos
     const triggerValueAnimation = (element) => {
         if (!element) return;
         element.classList.remove("value-pulse");
-        void element.offsetWidth; // Força o reflow para reiniciar a animação CSS
+        void element.offsetWidth; 
         element.classList.add("value-pulse");
     };
 
-    // Exemplo de integração com observador de mudanças nos valores dos resumos:
     const valueElements = document.querySelectorAll(".animate-value");
     valueElements.forEach((el) => {
         const observer = new MutationObserver(() => triggerValueAnimation(el));
@@ -1301,28 +1266,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
-/*////////////////////////////////////
-//
-// -  FIM DO JS
-//
-///////////////////////////////////*/
-
 const searchInput = document.getElementById('search-input');
 const clearBtn = document.getElementById('clear-search');
 
-// Monitora quando o usuário digita
-searchInput.addEventListener('input', () => {
-    if (searchInput.value.trim() !== '') {
-        clearBtn.style.display = 'block'; // Mostra o 'X'
-    } else {
-        clearBtn.style.display = 'none';  // Esconde o 'X' se estiver vazio
-    }
-});
+if (searchInput && clearBtn) {
+    searchInput.addEventListener('input', () => {
+        if (searchInput.value.trim() !== '') {
+            clearBtn.style.display = 'block'; 
+        } else {
+            clearBtn.style.display = 'none';  
+        }
+    });
 
-// Ação ao clicar no 'X'
-clearBtn.addEventListener('click', () => {
-    searchInput.value = '';             // Limpa o texto
-    clearBtn.style.display = 'none';    // Esconde o botão novamente
-    searchInput.focus();             
-});
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';             
+        clearBtn.style.display = 'none';    
+        searchInput.focus();             
+    });
+}
+
+//////////////////////////////////////
+//
+// - FIM DO JS
+//
+/////////////////////////////////////
