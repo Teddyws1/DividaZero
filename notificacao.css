@@ -1,0 +1,91 @@
+/* Card Largo e Alongado no Meio da Tela */
+.toast-message {
+    /* Posicionamento exato no centro da tela (50/50) */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 9999;
+    
+    /* Layout interno espaçado */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    
+    /* Largura maior e padding vertical aumentado para dar mais altura */
+    width: min(85vw, 320px);
+    padding: 24px 20px;
+    
+    /* Aparência de Card moderno */
+    background-color: var(--fundo-toast-message);
+    color: var(--color-toast-message);
+    border: 1px solid var(--border-color-noficacao);
+    border-radius: 18px;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
+    
+    /* Tipografia confortável */
+    font-size: clamp(0.9rem, 1.1vw, 1rem);
+    font-weight: 500;
+    line-height: 1.4;
+    
+    /* Estado inicial (invisível e centralizado com escala) */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.9);
+    
+    /* Transição rápida */
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s ease;
+    will-change: opacity, transform, visibility;
+}
+
+/* Estado Ativo: Abre no centro e permite clique para fechar */
+.toast-message.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    /* ESSENCIAL: Permite fechar ao clicar */
+    transform: translate(-50%, -50%) scale(1);
+    
+    /* 
+      ALTERE AQUI O TEMPO: 
+      O valor '3s' define quanto tempo ele fica visível antes de sumir.
+      Se quiser 4 segundos, mude para '4s'. Se quiser 5 segundos, '5s'.
+    */
+    animation: autoDismissLarge 0.2s ease 3s forwards;
+}
+
+/* Animação de saída automática no centro */
+@keyframes autoDismissLarge {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+}
+
+/* Ícone proporcional e bem destacado para o card maior */
+.toast-message ion-icon {
+    flex-shrink: 0;
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    padding: 10px;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+}
+
+/* Variação de Sucesso */
+.toast-message.success ion-icon {
+    color: var(--toast-success-icon);
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Redução de movimento para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    .toast-message {
+        transform: translate(-50%, -50%);
+        transition: opacity 0.2s ease;
+    }
+}

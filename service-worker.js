@@ -2,7 +2,7 @@
 // -003PC : SERVICE WORKER PWA
 // ////////////////////////////////////////
 
-const CACHE_NAME = "DívidaZero-012";
+const CACHE_NAME = "DívidaZero-013";
 
 const FILES_TO_CACHE = [
 
@@ -23,6 +23,7 @@ const FILES_TO_CACHE = [
 "./nova-despesa.css",
 "./css-versoes.css",
 "./style-divs-principal.css",
+"./notificacao.css",
 
 
 //•JAVA-SCRIPT 
@@ -31,7 +32,7 @@ const FILES_TO_CACHE = [
 "./js-das-versoes.js",
 "./versoes.js",
 "./footer-arrastavel.js",
-
+"./security.js",
 
 //•configuração 
 "./manifest.json"

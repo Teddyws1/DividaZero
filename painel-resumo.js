@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="pie-chart-wrapper">
                     <div class="donut-chart" style="--conic-data: ${conicDataString};">
                         <div class="donut-center" id="donut-center-info">
-                            <span class="donut-center-title" id="center-title">Toque na fatia</span>
+                            <span class="donut-center-title" id="center-title">Toque no mês</span>
                             <span class="donut-center-value" id="center-value">---</span>
                         </div>
                     </div>

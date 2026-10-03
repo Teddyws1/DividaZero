@@ -175,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return `${numPart}-${letterPart}`;
     }
-
     function saveData() {
         localStorage.setItem('dz_debts', JSON.stringify(state.debts));
         localStorage.setItem('dz_logs', JSON.stringify(state.logs));
@@ -349,16 +348,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                card.addEventListener('click', (e) => {
-                    if (!e.target.closest('.status-badge')) {
+                let holdTimer = null;
+
+                const startHold = (e) => {
+                    if (e.target.closest('.status-badge')) return;
+                    holdTimer = setTimeout(() => {
                         openEditModal(debt);
+                        showToast("Modo de edição ativado!");
+                    }, 1050);
+                };
+
+                const cancelHold = () => {
+                    if (holdTimer) {
+                        clearTimeout(holdTimer);
+                        holdTimer = null;
                     }
-                });
+                };
+
+                card.addEventListener('mousedown', startHold);
+                card.addEventListener('mouseup', cancelHold);
+                card.addEventListener('mouseleave', cancelHold);
+
+                card.addEventListener('touchstart', startHold, { passive: true });
+                card.addEventListener('touchend', cancelHold);
+                card.addEventListener('touchcancel', cancelHold);
 
                 const badge = card.querySelector('.status-badge');
                 badge.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    toggleDebtStatus(debt.id);
+                    const targetId = badge.getAttribute('data-id');
+                    const foundDebt = state.debts.find(d => d.id === targetId);
+
+                    if (foundDebt) {
+                        // Se já estiver quitado, impede de voltar para aberto pelo clique direto fora do modal
+                        if (foundDebt.paid) {
+                            showToast("Para reabrir esta conta, utilize o modal de edição.", "error");
+                            return;
+                        }
+
+                        foundDebt.paid = true;
+                        addLog(`Status da dívida #${foundDebt.id} alterado para: Quitado`);
+                        saveData();
+                        renderDebts();
+                        showToast("Status alterado para Quitado!");
+                    }
                 });
 
                 dom.debtsContainer.appendChild(card);
@@ -452,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         min="1" 
                         max="${lastDayOfMonth}" 
                         value="${defaultDay}" 
+                        placeholder="Dia"
                         style="text-align: center; font-size: 1.2rem; width: 100px; margin: 0 auto;"
                     >
                 </div>
@@ -548,19 +582,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             dom.editPaidFalse.checked = true;
         }
+        dom.editPaidTrue.disabled = false;
+        dom.editPaidFalse.disabled = false;
 
         updateCharCounterForInput(dom.editExpenseDescription, dom.editCharCounter);
         openModal(dom.modalEditExpense);
-    }
-
-    function toggleDebtStatus(id) {
-        const debt = state.debts.find(d => d.id === id);
-        if (debt) {
-            debt.paid = !debt.paid;
-            addLog(`Status da dívida #${debt.id} (${debt.description}) alterado para ${debt.paid ? 'Pago' : 'Pendente'}`);
-            saveData();
-            renderDebts();
-        }
     }
 
     function openModal(modal) {
@@ -929,7 +955,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!desc || val <= 0 || !date) return;
 
-        // Captura o horário exato em que a dívida foi criada (HH:mm)
         const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
         const newDebt = {
@@ -974,6 +999,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debt.description = dom.editExpenseDescription.value.trim();
             debt.value = parsedVal;
             debt.date = dom.editExpenseDate.value;
+            
             debt.paid = dom.editPaidTrue.checked;
 
             addLog(`Dívida #${debt.id} atualizada: [${debt.company}] ${debt.description.substring(0, 25)}...`);
@@ -1034,19 +1060,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // SISTEMA DE SELEÇÃO DE PASTA INTELIGENTE (VERIFICA SE DividaZero_Dados.json JÁ EXISTE)
     dom.menuItemExport.addEventListener('click', async () => {
         toggleSidebar(false);
         const dataString = JSON.stringify(state, null, 2);
 
-        // 1. TENTA USAR A API DE DIRETÓRIOS DO NAVEGADOR (FILE SYSTEM ACCESS API)
         if ('showDirectoryPicker' in window) {
             try {
-                // Se ainda não escolheu uma pasta nesta sessão, solicita ao utilizador para escolher uma
                 if (!exportDirectoryHandle) {
                     exportDirectoryHandle = await window.showDirectoryPicker();
                 } else {
-                    // Verifica se a permissão para mexer na pasta continua concedida
                     const options = { mode: 'readwrite' };
                     if (await exportDirectoryHandle.queryPermission(options) !== 'granted') {
                         if (await exportDirectoryHandle.requestPermission(options) !== 'granted') {
@@ -1056,16 +1078,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Procura na pasta escolhida se já existe o arquivo "DividaZero_Dados.json"
-                // create: false faz com que ele apenas procure sem criar nada por enquanto
                 try {
                     exportFileHandle = await exportDirectoryHandle.getFileHandle('DividaZero_Dados.json', { create: false });
                 } catch (err) {
-                    // Se não existir, o navegador lança um erro, então criamos o arquivo novo na pasta
                     exportFileHandle = await exportDirectoryHandle.getFileHandle('DividaZero_Dados.json', { create: true });
                 }
 
-                // Escreve os dados no arquivo encontrado ou recém-criado
                 const writable = await exportFileHandle.createWritable();
                 await writable.write(dataString);
                 await writable.close();
@@ -1076,12 +1094,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 exportDirectoryHandle = null;
                 exportFileHandle = null;
-                if (err.name === 'AbortError') return; // Utilizador cancelou a caixa de diálogo
+                if (err.name === 'AbortError') return;
                 console.warn('Fallback de diretório ativado:', err);
             }
         }
 
-        // 2. FALLBACK UNIVERSAL (DOWNLOAD VIA BLOB CASO O BROWSER NÃO SUPORTE DIRETÓRIOS)
         const blob = new Blob([dataString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const downloadAnchor = document.createElement('a');
@@ -1284,6 +1301,27 @@ if (searchInput && clearBtn) {
         searchInput.focus();             
     });
 }
+/*////////////////////////////////////
+//
+// - notificação modal clean geral  
+//
+///////////////////////////////////*/
+// Função única que procura e fecha o toast
+function fecharToastInstante() {
+    const toastAtivo = document.querySelector('.toast-message.active');
+    if (toastAtivo) {
+        toastAtivo.classList.remove('active');
+    }
+}
+
+// 1. Fecha com clique ou toque na tela (Mobile e Desktop)
+document.addEventListener('click', fecharToastInstante);
+document.addEventListener('touchstart', fecharToastInstante, { passive: true });
+
+// 2. Fecha ao rolar a página (Scroll no celular ou rodinha do mouse no PC)
+// Usamos window com { capture: true } porque eventos de scroll não "borbulham" por padrão
+window.addEventListener('scroll', fecharToastInstante, { capture: true, passive: true });
+window.addEventListener('wheel', fecharToastInstante, { passive: true });
 
 //////////////////////////////////////
 //

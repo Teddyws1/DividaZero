@@ -1,12 +1,25 @@
 const systemUpdates = [
+   {
+    version: "2.3.0",
+    status: "versão atual",
+    date: "03/10/2026",
+    description: [
+        "Ajustes leves no visual e na nomenclatura",
+        "Implementado sistema de proteção contra seleção, cópia e ações de contexto.",
+        "Agora, para editar uma dívida, basta pressionar e segurar o card por 2 segundos."
+    ],
+    url: "https://teddyws1.github.io/DividaZero/"
+},
     {
     version: "2.2.0",
-    status: "versão atual",
+    status: "Estável",
     date: "26/09/2026",
     description: [
     "Aprimoramentos no salvamento de dados.",
 "Novo sistema de gerenciamento de horários.",
-"Ajustes internos e melhorias de desempenho."
+"Ajustes internos e melhorias de desempenho.",
+"melhorias mecanismo dos status das dívidas",
+"melhoria no visual da notificações"
     ],
     url: "https://teddyws1.github.io/DividaZero/"
 }

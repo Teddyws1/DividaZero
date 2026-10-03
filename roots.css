@@ -146,8 +146,8 @@
 // -toast-message -escuro
 //
 //////////////////////////////*/
---color-toast-message:#fff;
---fundo-toast-message:#0F172A;
+--color-toast-message:#000000;
+--fundo-toast-message:#FFFFFF;
 
 /*////////////////////////////////////
 //
