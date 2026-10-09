@@ -1,7 +1,18 @@
 const systemUpdates = [
    {
-    version: "2.3.0",
+    version: "2.3.1",
     status: "versão atual",
+    date: "09/10/2026",
+    description: [
+"Adicionado sistema de arraste (swipe) na tela principal para trocar de mês",
+"Suporte a gestos de toque (mobile) e clique-e-arraste (desktop)"
+    ],
+    url: "https://teddyws1.github.io/DividaZero/"
+},
+
+   {
+    version: "2.3.0",
+    status: "Estável",
     date: "03/10/2026",
     description: [
         "Ajustes leves no visual e na nomenclatura",

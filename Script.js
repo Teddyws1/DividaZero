@@ -930,6 +930,64 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDebts();
     });
 
+    /////////////////////////////////////////////////////////////////////////////
+    // NOVIDADE: SISTEMA DE SCROLL/ARRASTE PARA TROCA DE MÊS (DESKTOP E MOBILE) //
+    /////////////////////////////////////////////////////////////////////////////
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+    const swipeMinDistance = 60; // Distância mínima (em pixels) para considerar o gesto
+
+    function evaluateSwipe(endX, endY) {
+        const diffX = endX - touchStartX;
+        const diffY = endY - touchStartY;
+
+        // Garante que o movimento foi majoritariamente horizontal e superou a distância mínima
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeMinDistance) {
+            if (diffX > 0) {
+                // Arrastou para a direita: Mês anterior
+                state.currentDate.setMonth(state.currentDate.getMonth() - 1);
+                renderDebts();
+            } else {
+                // Arrastou para a esquerda: Próximo mês
+                state.currentDate.setMonth(state.currentDate.getMonth() + 1);
+                renderDebts();
+            }
+        }
+    }
+
+    // Suporte para Toque (Smartphones/Tablets)
+    dom.debtsContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    dom.debtsContainer.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        evaluateSwipe(touchEndX, touchEndY);
+    }, { passive: true });
+
+    // Suporte para Mouse (Desktop - clique e arraste)
+    dom.debtsContainer.addEventListener('mousedown', (e) => {
+        touchStartX = e.screenX;
+        touchStartY = e.screenY;
+        isSwiping = true;
+    });
+
+    dom.debtsContainer.addEventListener('mouseup', (e) => {
+        if (!isSwiping) return;
+        const touchEndX = e.screenX;
+        const touchEndY = e.screenY;
+        evaluateSwipe(touchEndX, touchEndY);
+        isSwiping = false;
+    });
+
+    dom.debtsContainer.addEventListener('mouseleave', () => {
+        isSwiping = false; // Cancela se o mouse sair da área antes de soltar o botão
+    });
+    // FIM DA NOVIDADE ///////////////////////////////////////////////////////////
+
     dom.searchInput.addEventListener('input', (e) => {
         state.filterQuery = e.target.value;
         renderDebts();

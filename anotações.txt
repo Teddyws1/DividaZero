@@ -24,8 +24,8 @@
 ============== [versões] ===============
 versoes 
 versao atual
-v=013
-DívidaZero = V  atualmente v=013
+v=014
+DívidaZero = V  atualmente v=014
 img
 
 https://i.postimg.cc/wxDZMkFH/Picsart-26-08-16-12-23-02-954.jpg
