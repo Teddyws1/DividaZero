@@ -88,8 +88,8 @@
 }
 
 .debt-company-badge {
-    background-color: var(--bg-main);
-    color: var(--text-muted);
+    background-color: var(--fundo-badge);
+    color: var(--color-text-badge);
     font-size: clamp(0.72rem, 0.9vw, 0.82rem);
     font-weight: 700;
     padding: 2px 8px;
@@ -161,8 +161,8 @@
 }
 
 .status-paid {
-    background-color: var(--paid-bg);
-    color: var(--paid-color);
+    background-color: var(--status-badge);
+    color: var(--color-status-badge);
     border: 1px solid var(--paid-border);
 }
 /*////////////////////////////////////

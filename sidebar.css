@@ -93,7 +93,9 @@
     margin: 0;
 }
 
-.menu-item {
+.menu-item,
+.menu-item-expotar,
+.botao-importar-dado {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -111,18 +113,29 @@
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.menu-item ion-icon {
+/* Ícones do menu */
+.menu-item ion-icon,
+.menu-item-expotar ion-icon,
+.botao-importar-dado ion-icon {
     font-size: 1.25rem;
     flex-shrink: 0;
 }
 
+/* Efeito ao passar o mouse ou focar */
 .menu-item:hover,
-.menu-item:focus {
+.menu-item:focus,
+.menu-item-expotar:hover,
+.menu-item-expotar:focus,
+.botao-importar-dado:hover,
+.botao-importar-dado:focus {
     background-color: var(--hover-fundo-sidebar);
     color: var(--hover-color-text-sidebar);
 }
 
-.menu-item:hover ion-icon {
+/* Cor do ícone ao passar o mouse */
+.menu-item:hover ion-icon,
+.menu-item-expotar:hover ion-icon,
+.botao-importar-dado:hover ion-icon {
     color: var(--success-color);
 }
 
@@ -281,3 +294,9 @@
         transform: scale(1);
     }
 }
+
+/*////////////////////////////////////
+//
+// - botão de exportar dados
+//
+///////////////////////////////////*/

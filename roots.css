@@ -9,10 +9,17 @@
   --primary-dark: #007A4D;
   --header-bg: #0F172A;
   --color-titulo: #EA580C;
-
+  
+  --fundo-badge:#B98410B3;
+  --color-text-badge:#fff;
   --bg-main: #F1F5F9;
   --bg-card: #FFFFFF;
-
+  --status-badge: #10B981;
+  --color-status-badge:#FFFFFF;
+  --pending-bg:#FFEE0073;
+  --pending-color: #000000;
+  --pending-border: #87770CB5;
+  
   --text-main: #0F172A;
   --text-muted: #64748B;
 --text-colo-teditar-divida: #FFFFFF;
@@ -128,7 +135,7 @@
 //
 ///////////////////////////////////*/
 --fundo-sidebar:#FFFFFF;
---color-text-sidebar:#64748B;
+--color-text-sidebar:#515C6C;
 --hover-fundo-sidebar:#FFFFFF14;
 --hover-color-text-sidebar:#059669;
 --h2-color-zero:#07BD85;
@@ -169,6 +176,9 @@
   --primary-dark: #047857;
   --header-bg: #020617;
   --color-titulo: #FFFFFF;
+
+  --fundo-badge:#D1930B99;
+  --color-text-badge:#fff;
 
   --bg-main: #090D16;
   --bg-card: #1E293B;
@@ -234,7 +244,6 @@
   --share-color: #38BDF8;
   --success-color: #34D399;
   
-  
 /*////////////////////////////////////
 //
 // - AVISO LIMPAR HISTÓRICO.-escuro
@@ -273,7 +282,7 @@
 //
 ///////////////////////////////////*/
 --fundo-sidebar:#0F172A;
---color-text-sidebar:#64748B;
+--color-text-sidebar:#9EA3AC;
 --hover-fundo-sidebar:#FFFFFF14;
 --hover-color-text-sidebar:#07BD85;
 --h2-color-zero:#07BD85;
@@ -313,11 +322,12 @@
   --tag-bg: rgba(5, 150, 105, 0.15);
   --tag-border: rgba(5, 150, 105, 0.3);
 
-  --pending-bg: rgba(217, 119, 6, 0.15);
+  --pending-bg: #D9770626;
   --pending-color: #FBBF24;
-  --pending-border: rgba(217, 119, 6, 0.3);
+  --pending-border: rgba(217, 119, 6, 1);
 
-  --paid-bg: rgba(21, 128, 61, 0.15);
+  --status-badge: #15803D26;
+  --color-status-badge:#4ADE80;
   --paid-color: #4ADE80;
   --paid-border: rgba(21, 128, 61, 0.3);
 
