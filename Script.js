@@ -4,7 +4,7 @@
 //
 //////////////////////////////////////
 
-// Armazena a referência da pasta e do arquivo selecionados pelo utilizador
+// Armazena a referência da pasta e do arquivo selecionados pelo utilizador[span_2](start_span)[span_2](end_span)
 let exportDirectoryHandle = null;
 let exportFileHandle = null;
 
@@ -252,19 +252,68 @@ document.addEventListener('DOMContentLoaded', () => {
         let mappedDebts = state.debts.map((d, index) => ({ ...d, originalIndex: index }));
 
         let filteredDebts = mappedDebts.filter(debt => {
+            const query = state.filterQuery.toLowerCase().trim();
+
+            // SISTEMA DE BUSCA "HOJE" OU "HJ"[span_3](start_span)[span_3](end_span)
+            if (query === 'hoje' || query === 'hj') {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const todayFormattedStr = `${yyyy}-${mm}-${dd}`;
+                return debt.date === todayFormattedStr;
+            }
+
+            // SISTEMA DE BUSCA "ONTEM" OU "ON"[span_4](start_span)[span_4](end_span)
+            if (query === 'ontem' || query === 'on') {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yyyy = yesterday.getFullYear();
+                const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+                const dd = String(yesterday.getDate()).padStart(2, '0');
+                const yesterdayFormattedStr = `${yyyy}-${mm}-${dd}`;
+                return debt.date === yesterdayFormattedStr;
+            }
+
+            // SISTEMA DE BUSCA POR DATA/MÊS COM BARRA (Ex: 12/ para dia, /12 para mês, 12/02 para ambos)
+            if (query.includes('/') && debt.date && debt.date.includes('-')) {
+                const parts = query.split('/');
+                const dayPart = parts[0] ? parts[0].trim() : '';
+                const monthPart = parts[1] ? parts[1].trim() : '';
+
+                const [dYear, dMonth, dDay] = debt.date.split('-');
+
+                const paddedDay = dayPart ? dayPart.padStart(2, '0') : '';
+                const paddedMonth = monthPart ? monthPart.padStart(2, '0') : '';
+
+                // Se digitou apenas o mês com barra antes (ex: /12)
+                if (paddedDay === '' && paddedMonth !== '') {
+                    return dMonth === paddedMonth;
+                }
+
+                // Se digitou apenas o dia com barra depois (ex: 12/)
+                if (paddedDay !== '' && paddedMonth === '') {
+                    return dDay === paddedDay;
+                }
+
+                // Se digitou dia e mês completos (ex: 12/02)
+                if (paddedDay !== '' && paddedMonth !== '') {
+                    return dDay === paddedDay && dMonth === paddedMonth;
+                }
+            }
+
             const debtDate = new Date(debt.date + 'T00:00:00');
             const matchesDate = debtDate.getMonth() === currentMonth && debtDate.getFullYear() === currentYear;
 
-            const query = state.filterQuery.toLowerCase().trim();
             const company = (debt.company || 'Outros').toLowerCase();
             
-            const debtValueStr = debt.value.toString();
-            const debtValueFormatted = debt.value.toFixed(2).replace('.', ',');
+            const debtValueStr = debt.value ? debt.value.toString() : '';
+            const debtValueFormatted = debt.value ? debt.value.toFixed(2).replace('.', ',') : '';
             const cleanQuery = query.replace('r$', '').replace(/\s+/g, '').replace('.', ',');
 
             const matchesQuery = 
-                debt.description.toLowerCase().includes(query) ||
-                debt.id.toLowerCase().includes(query) ||
+                (debt.description && debt.description.toLowerCase().includes(query)) ||
+                (debt.id && debt.id.toLowerCase().includes(query)) ||
                 company.includes(query) ||
                 debtValueStr.includes(query) ||
                 debtValueFormatted.includes(cleanQuery);
@@ -296,17 +345,17 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         } else {
             filteredDebts.forEach(debt => {
-                totalVal += debt.value;
+                totalVal += debt.value || 0;
 
                 if (debt.paid) {
-                    paidVal += debt.value;
+                    paidVal += debt.value || 0;
                     paidCount++;
                 } else {
-                    pendingVal += debt.value;
+                    pendingVal += debt.value || 0;
                     pendingCount++;
                 }
 
-                const dateObj = new Date(debt.date + 'T00:00:00');
+                const dateObj = debt.date ? new Date(debt.date + 'T00:00:00') : new Date();
                 const formattedDate = dateObj.toLocaleDateString('pt-BR');
                 const companyName = debt.company || 'Outros';
                 const formattedTime = debt.createdAt || '--:--';
@@ -337,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="debt-values">
-                        <span class="debt-amount">${formatCurrency(debt.value)}</span>
+                        <span class="debt-amount">${formatCurrency(debt.value || 0)}</span>
                         <span class="status-badge ${debt.paid ? 'status-paid' : 'status-pending'}" data-id="${debt.id}">
                             <ion-icon 
                                 name="${debt.paid ? 'shield-checkmark-outline' : 'hourglass-outline'}"
@@ -380,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const foundDebt = state.debts.find(d => d.id === targetId);
 
                     if (foundDebt) {
-                        // Se já estiver quitado, impede de voltar para aberto pelo clique direto fora do modal
+                        // Se já estiver quitado, impede de voltar para aberto pelo clique direto fora do modal[span_5](start_span)[span_5](end_span)
                         if (foundDebt.paid) {
                             showToast("Para reabrir esta conta, utilize o modal de edição.", "error");
                             return;
@@ -936,27 +985,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let touchStartY = 0;
     let isSwiping = false;
-    const swipeMinDistance = 60; // Distância mínima (em pixels) para considerar o gesto
+    const swipeMinDistance = 60; // Distância mínima (em pixels) para considerar o gesto[span_6](start_span)[span_6](end_span)
 
     function evaluateSwipe(endX, endY) {
         const diffX = endX - touchStartX;
         const diffY = endY - touchStartY;
 
-        // Garante que o movimento foi majoritariamente horizontal e superou a distância mínima
+        // Garante que o movimento foi majoritariamente horizontal e superou a distância mínima[span_7](start_span)[span_7](end_span)
         if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeMinDistance) {
             if (diffX > 0) {
-                // Arrastou para a direita: Mês anterior
+                // Arrastou para a direita: Mês anterior[span_8](start_span)[span_8](end_span)
                 state.currentDate.setMonth(state.currentDate.getMonth() - 1);
                 renderDebts();
             } else {
-                // Arrastou para a esquerda: Próximo mês
+                // Arrastou para a esquerda: Próximo mês[span_9](start_span)[span_9](end_span)
                 state.currentDate.setMonth(state.currentDate.getMonth() + 1);
                 renderDebts();
             }
         }
     }
 
-    // Suporte para Toque (Smartphones/Tablets)
+    // Suporte para Toque (Smartphones/Tablets)[span_10](start_span)[span_10](end_span)
     dom.debtsContainer.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
@@ -968,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
         evaluateSwipe(touchEndX, touchEndY);
     }, { passive: true });
 
-    // Suporte para Mouse (Desktop - clique e arraste)
+    // Suporte para Mouse (Desktop - clique e arraste)[span_11](start_span)[span_11](end_span)
     dom.debtsContainer.addEventListener('mousedown', (e) => {
         touchStartX = e.screenX;
         touchStartY = e.screenY;
@@ -984,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dom.debtsContainer.addEventListener('mouseleave', () => {
-        isSwiping = false; // Cancela se o mouse sair da área antes de soltar o botão
+        isSwiping = false; // Cancela se o mouse sair da área antes de soltar o botão[span_12](start_span)[span_12](end_span)
     });
     // FIM DA NOVIDADE ///////////////////////////////////////////////////////////
 
@@ -1364,7 +1413,7 @@ if (searchInput && clearBtn) {
 // - notificação modal clean geral  
 //
 ///////////////////////////////////*/
-// Função única que procura e fecha o toast
+// Função única que procura e fecha o toast[span_13](start_span)[span_13](end_span)
 function fecharToastInstante() {
     const toastAtivo = document.querySelector('.toast-message.active');
     if (toastAtivo) {
@@ -1372,12 +1421,9 @@ function fecharToastInstante() {
     }
 }
 
-// 1. Fecha com clique ou toque na tela (Mobile e Desktop)
 document.addEventListener('click', fecharToastInstante);
 document.addEventListener('touchstart', fecharToastInstante, { passive: true });
 
-// 2. Fecha ao rolar a página (Scroll no celular ou rodinha do mouse no PC)
-// Usamos window com { capture: true } porque eventos de scroll não "borbulham" por padrão
 window.addEventListener('scroll', fecharToastInstante, { capture: true, passive: true });
 window.addEventListener('wheel', fecharToastInstante, { passive: true });
 

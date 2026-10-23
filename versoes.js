@@ -1,7 +1,19 @@
 const systemUpdates = [
+   
+{
+  version: "2.3.3",
+  status: "Versão atual",
+  date: "23/10/2026",
+  description: [
+    "Aprimoramento da barra de atalhos, permitindo filtrar dívidas por meio de comandos rápidos, como 'hj' ou 'hoje' para consultar as dívidas do dia atual e 'on' ou 'ontem' para consultar as dívidas do dia anterior.",
+    "Implementação de atalhos de pesquisa por data: ao digitar número do dia'00/', o sistema exibe as dívidas do dia informado; ao digitar '/00' ao digita número do mês, exibe as dívidas do mês informado."
+  ],
+  url: "https://teddyws1.github.io/DividaZero/"
+},
+
       {
        version: "2.3.2",
-       status: "versão atual",
+       status: "estável",
        date: "16/10/2026",
        description: [
            "Aprimoramento visual de determinados elementos da interface."

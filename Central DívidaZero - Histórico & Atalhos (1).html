@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Central DívidaZero - Histórico & Atalhos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dzBg: '#070b14',
+                        dzCard: '#111827',
+                        dzCardHover: '#1f2937',
+                        dzSidebar: '#0b0f19',
+                        dzPrimary: '#6366f1',
+                        dzPrimaryHover: '#4f46e5',
+                        dzAccent: '#10b981',
+                        dzText: '#f8fafc',
+                        dzMuted: '#94a3b8'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Standard syntax */
+            -webkit-touch-callout: none; /* Prevent context menu on long press on iOS */
+        }
+
+        /* Allow selection inside inputs and textareas if needed */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070b14;
+            color: #f8fafc;
+            touch-action: pan-x pan-y; /* Prevent pinch zoom on touch devices */
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070b14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row bg-[#070b14] text-slate-100 selection:bg-indigo-500 selection:text-white">
+
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="w-80 md:w-80 bg-[#0b0f19] border-r border-slate-800/80 flex flex-col justify-between shrink-0 transition-transform duration-300 ease-in-out z-50 fixed md:static inset-y-0 left-0 transform -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+        <div>
+            <!-- Branding -->
+            <div class="p-6 border-b border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3.5">
+                    <div>
+                        <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
+                Divida Zero™
+
+                        </h1>
+                        <p class="text-xs text-slate-400 font-medium">Central de Referência & Atalhos</p>
+                    </div>
+                </div>
+                <button id="mobileCloseBtn" class="md:hidden text-slate-400 hover:text-white p-2.5 rounded-xl hover:bg-slate-800/50 transition-all" aria-label="Fechar menu">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-5 space-y-2">
+                <p class="px-3 mb-3 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Menu Principal</p>
+                <ul class="space-y-1.5" role="list">
+                    <li>
+                        <button onclick="switchTab('versions')" id="nav-versions" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-600/25">
+                            <i class="fa-solid fa-clock-rotate-left w-5 text-center text-indigo-200"></i>
+                            <span>Histórico de Versões</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="switchTab('shortcuts')" id="nav-shortcuts" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                            <i class="fa-solid fa-keyboard w-5 text-center text-emerald-400"></i>
+                            <span>Atalhos de Pesquisa</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="switchTab('about')" id="nav-about" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                            <i class="fa-solid fa-circle-info w-5 text-center text-indigo-400"></i>
+                            <span>Sobre o Projeto</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Sidebar Footer Action -->
+<div class="p-5 border-t border-slate-800/80 bg-[#070b14]/50">
+    <a href="index.html" 
+       class="w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition-all shadow-md group">
+        <i class="fa-solid fa-arrow-up-right-from-square text-indigo-400 group-hover:scale-110 transition-transform"></i>
+        <span>Abrir App DívidaZero</span>
+    </a>
+</div>
+
+    </aside>
+
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <header class="sticky top-0 z-30 backdrop-blur-xl bg-[#070b14]/80 border-b border-slate-800/80 px-6 sm:px-10 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button id="mobileMenuBtn" class="md:hidden p-2.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700 transition-all" aria-label="Abrir menu">
+                    <i class="fa-solid fa-bars text-base"></i>
+                </button>
+                <div>
+                    <h2 id="pageTitle" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">Histórico de Versões</h2>
+                    <p id="pageSubtitle" class="text-xs sm:text-sm text-slate-400 font-medium">Consulte atualizações, novidades e status em tempo real</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></span> v2.3.2 Atual
+                </span>
+            </div>
+        </header>
+
+        <div class="p-6 sm:p-10 max-w-5xl w-full mx-auto flex-grow">
+            
+            <div id="tab-versions" class="tab-content space-y-6">
+                <!-- Search & Filter Bar -->
+                <div class="bg-[#111827]/80 border border-slate-800/80 rounded-3xl p-5 sm:p-7 shadow-xl backdrop-blur-md">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="relative w-full">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                            </span>
+                            <input type="text" id="searchInput" placeholder="Pesquise por 'atual', 'antigo', número da versão (ex: 2.3.2) ou termo..." 
+                                   class="w-full pl-11 pr-4 py-3.5 bg-[#070b14] border border-slate-800 rounded-2xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner">
+                        </div>
+                        <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+                            <span id="versionCountBadge" class="text-xs font-semibold text-slate-400 px-3 py-2 bg-[#070b14] border border-slate-800 rounded-xl w-full sm:w-auto text-center">
+                                0 versões
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Versions Container (UL & LI cards) -->
+                <ul id="versionsContainer" class="space-y-5" role="list">
+                    <!-- Dinâmico via JavaScript -->
+                </ul>
+
+                <!-- Empty State -->
+                <div id="emptyVersions" class="hidden text-center py-20">
+                    <div class="w-20 h-20 bg-[#111827] text-slate-500 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl border border-slate-800 shadow-xl">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-200">Nenhum resultado encontrado</h3>
+                    <p class="text-sm text-slate-500 mt-1">Tente pesquisar por 'atual', 'antigo' ou outro termo no histórico.</p>
+                </div>
+            </div>
+
+            <div id="tab-shortcuts" class="tab-content hidden space-y-6">
+                <div class="bg-gradient-to-r from-indigo-950/40 via-[#111827] to-emerald-950/40 border border-indigo-500/30 rounded-3xl p-6 sm:p-8 shadow-xl">
+                    <div class="max-w-2xl">
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-3">
+                            <i class="fa-solid fa-bolt mr-1.5"></i> Guia Oficial de Busca
+                        </span>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Comandos da Barra de Pesquisa</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Utilize estes atalhos inteligentes diretamente na barra de pesquisa do DívidaZero para filtrar contas e compromissos com agilidade total.</p>
+                    </div>
+                </div>
+
+                <ul id="shortcutsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5" role="list">
+                    <!-- Dinâmico via JavaScript -->
+                </ul>
+            </div>
+
+            <div id="tab-about" class="tab-content hidden space-y-6">
+                <div class="bg-[#111827] border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl">
+                    <div class="flex items-center gap-5 mb-8 pb-8 border-b border-slate-800/80">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white text-3xl shadow-xl shadow-indigo-500/20">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-white">Sobre o DívidaZero</h3>
+                            <p class="text-xs sm:text-sm text-indigo-400 font-semibold mt-1">Gestão Financeira Inteligente & Prática</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4 text-sm sm:text-base text-slate-300 leading-relaxed">
+                        <p>
+                            O <strong class="text-white font-semibold">DívidaZero</strong> é um aplicativo web progressivo (PWA) de alta performance projetado para auxiliar no controle de dívidas, compromissos e planejamento financeiro diário com interface limpa e intuitiva.
+                        </p>
+                        <p>
+                            Esta central de documentação reúne o histórico completo de atualizações consolidadas por versão e o guia de atalhos rápidos para otimizar sua experiência de uso.
+                        </p>
+<div class="pt-6 flex flex-wrap gap-4">
+    <a href="index.html" 
+       class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/30">
+        <i class="fa-solid fa-globe"></i> Acessar Aplicação Principal
+    </a>
+</div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="border-t border-slate-800/80 bg-[#0b0f19]/50 py-6 px-6 sm:px-10 mt-auto">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-medium">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+                    <span>DívidaZero &bull; Central de Referência e Atualizações</span>
+                </div>
+<div>
+    Desenvolvido por <a href="https://github.com/Teddyws1" target="_blank" rel="noopener noreferrer" class="text-slate-300 font-semibold hover:text-indigo-400 transition-colors underline decoration-slate-600 hover:decoration-indigo-400">Teddy Machado</a>
+</div>
+
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // Previne gestos de zoom em dispositivos móveis (pinch zoom) e duplo toque
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Bloqueio de menu de contexto (clique direito / long press)
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // Dados de versões fornecidos
+        const systemUpdates = [
+            {
+                version: "2.3.2",
+                status: "Versão atual",
+                date: "16/10/2026",
+                description: [
+                    "Aprimoramento da barra de atalhos, permitindo filtrar dívidas por meio de comandos rápidos, como 'hj' ou 'hoje' para consultar as dívidas do dia atual e 'on' ou 'ontem' para consultar as dívidas do dia anterior.",
+                    "Implementação de atalhos de pesquisa por data: ao digitar número do dia '00/', o sistema exibe as dívidas do dia informado; ao digitar '/00' ao digitar número do mês, exibe as dívidas do mês informado.",
+                    "Aprimoramento visual de determinados elementos da interface."
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "2.3.1",
+                status: "Estável",
+                date: "09/10/2026",
+                description: [
+                    "Adicionado sistema de arraste (swipe) na tela principal para trocar de mês",
+                    "Suporte a gestos de toque (mobile) e clique-e-arraste (desktop)"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "2.3.0",
+                status: "Estável",
+                date: "03/10/2026",
+                description: [
+                    "Ajustes leves no visual e na nomenclatura",
+                    "Implementado sistema de proteção contra seleção, cópia e ações de contexto.",
+                    "Agora, para editar uma dívida, basta pressionar e segurar o card por 2 segundos."
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "2.2.0",
+                status: "Estável",
+                date: "26/09/2026",
+                description: [
+                    "Aprimoramentos no salvamento de dados.",
+                    "Novo sistema de gerenciamento de horários.",
+                    "Ajustes internos e melhorias de desempenho.",
+                    "Melhorias mecanismo dos status das dívidas",
+                    "Melhoria no visual da notificações"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "2.1.0",
+                status: "Estável",
+                date: "18/09/2026",
+                description: [
+                    "Aprimoramento do sistema de salvamento e atualização das dívidas.",
+                    "Melhorias no sistema de campos de entrada (inputs).",
+                    "Aprimoramento do gerenciamento e da exibição dos status das dívidas.",
+                    "Novo mini modal para visualização e navegação do próximo mês.",
+                    "Novo sistema de formatação para números de grande escala, com abreviação automática de valores.",
+                    "Novo sistema de limpeza e normalização de valores.",
+                    "Melhorias na aba de resumo para uma visualização mais clara das informações.",
+                    "Novo sistema de abreviação exata para valores elevados, com opção de expandir o valor completo ao tocar.",
+                    "Novo visual para a aba de resumo.",
+                    "Novo sistema de limpeza e otimização dos dados utilizados na barra de pesquisa."
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "2.0.0",
+                status: "Estável",
+                date: "13/09/2026",
+                description: [
+                    "Ajustes internos no sistema",
+                    "Correções visuais na interface",
+                    "Aprimoramento do sistema de salvamento de dívidas",
+                    "Novo sistema de gerenciamento de datas",
+                    "Novas cores visuais",
+                    "Melhorias no posicionamento dos elementos",
+                    "Melhorias nas posições dos elementos",
+                    "Novo sistema de fixa aba resumo"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.7.0",
+                status: "Estável",
+                date: "04/09/2026",
+                description: [
+                    "Sincronização Temporal Automática: o mês do sistema agora acompanha automaticamente o mês do aparelho",
+                    "Monitoramento em tempo real: virada automática de mês com o app aberto ou ao reabrir a aba",
+                    "Registro automático no histórico (logs) a cada virada de mês detectada",
+                    "Novo sistema de limite de caracteres de 0/50",
+                    "Nova função de cancelamento",
+                    "Ajustes visuais na interface",
+                    "Remoção de sistemas antigos que não estavam sendo utilizados",
+                    "Footer com sistema aprimorando"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.6.0",
+                status: "Estável",
+                date: "30/08/2026",
+                description: [
+                    "Ajustes de layout e correções no CSS",
+                    "Melhorias visuais na aba de Resumo Rápido.",
+                    "Melhoria visual no icones de empresa/categorias"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.5.1",
+                status: "Estável",
+                date: "24/08/2026",
+                description: [
+                    "Novo sistema de filtro na barra de pesquisa por VALORES agora"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.4.1",
+                status: "Estável",
+                date: "23/08/2026",
+                description: [
+                    "Novo sistema de animação para trocar de páginas",
+                    "Sistema de scroll ↔️",
+                    "Botão para Theme claro/escuro",
+                    "Novo visual em algumas partes"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.4.0",
+                status: "Estável",
+                date: "22/08/2026",
+                description: [
+                    "Novo sistema para exclusão de dívidas.",
+                    "Novas aba de histórico.",
+                    "Novo sistema de gráficos no estilo pizza.",
+                    "Sistema de histórico mensal.",
+                    "Sistema que exibe os maiores valores do mês atual e do mês anterior."
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.2.2",
+                status: "Estável",
+                date: "20/08/2026",
+                description: [
+                    "Novo sistema de instalação PWA.",
+                    "Melhorias no desempenho.",
+                    "Correções de pequenos erros.",
+                    "Acesse o DívidaZero pelo link abaixo.",
+                    "Modal de compartilhamento",
+                    "Compartilhar dívidas",
+                    "Com sistema de scroll no Footer para ocutar"
+                ],
+                url: "https://teddyws1.github.io/DividaZero/"
+            },
+            {
+                version: "1.1.1",
+                status: "Estável",
+                date: "16/08/2026",
+                description: [
+                    "Adicionado modal do Desenvolvedor Teddy Machado com atalho direto.",
+                    "Estruturação de código limpa e otimizada.",
+                    "Mapeamento de tags de identificação únicas."
+                ]
+            }
+        ];
+
+        // Dados dos atalhos de pesquisa
+        const searchShortcuts = [
+            {
+                command: "hj / hoje",
+                category: "Dias Relativos",
+                description: "Filtra instantaneamente todas as dívidas e compromissos agendados para o dia atual.",
+                badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+            },
+            {
+                command: "on / ontem",
+                category: "Dias Relativos",
+                description: "Exibe as dívidas referentes ao dia anterior para consulta de histórico recente.",
+                badge: "bg-amber-500/10 text-amber-400 border-amber-500/30"
+            },
+            {
+                command: "00/",
+                category: "Filtro por Dia",
+                description: "Digite o dia seguido de barra (ex: '15/') para filtrar todas as ocorrências daquele dia no mês.",
+                badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30"
+            },
+            {
+                command: "/00",
+                category: "Filtro por Mês",
+                description: "Digite barra seguida do mês (ex: '/08') para consultar todas as movimentações daquele mês.",
+                badge: "bg-purple-500/10 text-purple-400 border-purple-500/30"
+            },
+            {
+                command: "Valores (R$)",
+                category: "Busca Numérica",
+                description: "Pesquisa direta por montantes em dinheiro para localizar contas de valores específicos.",
+                badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
+            }
+            ,
+            {
+    command: "Editar Dívida",
+    category: "Ações por Toque Longo",
+    description: "Mantenha pressionado sobre qualquer item da lista por 2 segundos para abrir automaticamente o modal de edição com todos os dados preenchidos.",
+    badge: "bg-amber-500/10 text-amber-400 border-amber-500/30"
+}
+
+        ];
+
+        // Estado expandido dos cards
+        const expandedState = {};
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            ['versions', 'shortcuts', 'about'].forEach(id => {
+                const btn = document.getElementById(`nav-${id}`);
+                if (id === tabId) {
+                    btn.className = "w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-600/25";
+                } else {
+                    btn.className = "w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60";
+                }
+            });
+
+            const titles = {
+                versions: { title: "Histórico de Versões", subtitle: "Consulte todas as atualizações, melhorias e novidades do sistema" },
+                shortcuts: { title: "Atalhos da Pesquisa", subtitle: "Comandos rápidos e intuitivos para filtragem instantânea" },
+                about: { title: "Sobre o Projeto", subtitle: "Informações gerais sobre o DívidaZero" }
+            };
+            document.getElementById('pageTitle').innerText = titles[tabId].title;
+            document.getElementById('pageSubtitle').innerText = titles[tabId].subtitle;
+
+            closeMobileSidebar();
+        }
+
+        function toggleCardExpand(index) {
+            expandedState[index] = !expandedState[index];
+            renderVersions(document.getElementById('searchInput').value);
+        }
+
+        function renderVersions(filter = '') {
+            const container = document.getElementById('versionsContainer');
+            const emptyState = document.getElementById('emptyVersions');
+            const countBadge = document.getElementById('versionCountBadge');
+            container.innerHTML = '';
+
+            const q = filter.toLowerCase().trim();
+
+            const filtered = systemUpdates.filter(item => {
+                if (!q) return true;
+
+                const isCurrent = item.status.toLowerCase().includes('atual');
+                const isSearchingCurrent = (q === 'atual' || q === 'versão atual' || q === 'versao atual');
+                const isSearchingOld = (q === 'antigo' || q === 'antiga' || q === 'antigos' || q === 'estável' || q === 'estavel' || q === 'anterior' || q === 'anteriores');
+
+                if (isSearchingCurrent) {
+                    return isCurrent;
+                }
+                if (isSearchingOld) {
+                    return !isCurrent;
+                }
+
+                return item.version.toLowerCase().includes(q) ||
+                       item.date.toLowerCase().includes(q) ||
+                       item.status.toLowerCase().includes(q) ||
+                       item.description.some(d => d.toLowerCase().includes(q));
+            });
+
+            countBadge.innerText = `${filtered.length} ${filtered.length === 1 ? 'versão encontrada' : 'versões listadas'}`;
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach((item, originalIndex) => {
+                const isCurrent = item.status.toLowerCase().includes('atual');
+                const isExpanded = !!expandedState[originalIndex];
+                const hasMoreThanFive = item.description.length > 5;
+                
+                const li = document.createElement('li');
+                li.className = `bg-[#111827] border ${isCurrent ? 'border-indigo-500/60 shadow-xl shadow-indigo-500/10' : 'border-slate-800/80'} rounded-3xl p-6 sm:p-7 transition-all hover:border-slate-700`;
+
+                let content = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-800/80">
+                        <div class="flex items-center gap-3.5">
+                            <span class="text-xl sm:text-2xl font-black tracking-tight text-white">v${item.version}</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border ${isCurrent ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' : 'bg-slate-800/80 text-slate-300 border-slate-700'}">
+                                ${item.status}
+                            </span>
+                        </div>
+                        <span class="inline-flex items-center gap-2 bg-[#070b14] px-3.5 py-2 rounded-xl border border-slate-800 text-xs text-slate-400 font-medium w-fit">
+                            <i class="fa-regular fa-calendar text-indigo-400"></i> ${item.date}
+                        </span>
+                    </div>
+                    <ul class="space-y-2.5 text-sm text-slate-300" role="list">
+                `;
+
+                const itemsToShow = (hasMoreThanFive && !isExpanded) 
+                    ? item.description.slice(0, 5) 
+                    : item.description;
+
+                itemsToShow.forEach(desc => {
+                    content += `
+                        <li class="flex items-start gap-3 bg-[#070b14]/50 p-3.5 rounded-2xl border border-slate-800/50">
+                            <span class="text-emerald-400 mt-0.5 flex-shrink-0 text-xs"><i class="fa-solid fa-circle-check"></i></span>
+                            <span class="leading-relaxed font-normal">${desc}</span>
+                        </li>
+                    `;
+                });
+
+                content += `</ul>`;
+
+                if (hasMoreThanFive) {
+                    content += `
+                        <div class="mt-4 flex justify-center">
+                            <button onclick="toggleCardExpand(${originalIndex})" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all shadow-sm">
+                                <span>${isExpanded ? 'Ver menos' : `Ver mais (${item.description.length - 5} itens)`}</span>
+                                <i class="fa-solid fa-chevron-${isExpanded ? 'up' : 'down'} text-[10px]"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                if (item.url) {
+                    content += `
+                        <div class="mt-5 pt-4 border-t border-slate-800/60 flex justify-end">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors group">
+                                <span>Acessar DívidaZero</span>
+                                <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+                            </a>
+                        </div>
+                    `;
+                }
+
+                li.innerHTML = content;
+                container.appendChild(li);
+            });
+        }
+
+        function renderShortcuts() {
+            const container = document.getElementById('shortcutsContainer');
+            container.innerHTML = '';
+
+            searchShortcuts.forEach(sc => {
+                const li = document.createElement('li');
+                li.className = "bg-[#111827] border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-between hover:border-indigo-500/40 transition-all shadow-xl group";
+                li.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3.5 py-1.5 rounded-xl text-xs font-black font-mono tracking-wider border ${sc.badge}">
+                                ${sc.command}
+                            </span>
+                            <span class="text-xs text-slate-400 font-semibold">${sc.category}</span>
+                        </div>
+                        <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">${sc.description}</p>
+                    </div>
+                `;
+                container.appendChild(li);
+            });
+        }
+
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebarBackdrop').classList.remove('hidden');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarBackdrop').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderVersions();
+            renderShortcuts();
+
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                if (!e.target.value.trim()) {
+                    for (let key in expandedState) {
+                        delete expandedState[key];
+                    }
+                }
+                renderVersions(e.target.value);
+            });
+
+            document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
+            document.getElementById('mobileCloseBtn').addEventListener('click', closeMobileSidebar);
+            document.getElementById('sidebarBackdrop').addEventListener('click', closeMobileSidebar);
+        });
+    </script>
+</body>
+</html>

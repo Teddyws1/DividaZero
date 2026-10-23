@@ -2,7 +2,7 @@
 // -003PC : SERVICE WORKER PWA
 // ////////////////////////////////////////
 
-const CACHE_NAME = "DívidaZero-015";
+const CACHE_NAME = "DívidaZero-016";
 
 const FILES_TO_CACHE = [
 
